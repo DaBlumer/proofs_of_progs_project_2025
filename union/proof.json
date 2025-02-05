@@ -11,27 +11,22 @@
   "proofs": {
     "Intf": {},
     "Skel": {
-      "Make.before_disj_interval": { "prover": "cvc5@1.1.2", "time": 2.2 },
       "Make.before_disj_r_interval": {
         "tactic": "split_vc",
         "children": [
           { "prover": "cvc4@1.8", "time": 0.12 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 }
+          { "prover": "cvc5@1.1.2", "time": 1.3 }
         ]
       },
       "Make.bound_interval": { "prover": "cvc4@1.8", "time": 0.029 },
       "Make.clo_clo_mk": { "prover": "cvc4@1.8", "time": 0.052 },
       "Make.disjoint": { "prover": "cvc4@1.8", "time": 0.051 },
-      "Make.except": { "prover": "cvc4@1.8", "time": 0.043 },
-      "Make.ge": { "prover": "cvc4@1.8", "time": 0.04 },
+      "Make.except": { "prover": "cvc4@1.8", "time": 0.087 },
+      "Make.ge": { "prover": "cvc4@1.8", "time": 0.087 },
       "Make.gt": { "prover": "cvc4@1.8", "time": 0.276 },
-      "Make.incl_interval_charac": { "prover": "cvc4@1.8", "time": 0.374 },
-      "Make.incl_interval_r_charac": { "prover": "cvc4@1.8", "time": 0.043 },
+      "Make.incl_interval_charac": { "prover": "cvc5@1.1.2", "time": 0.291 },
       "Make.inter": { "prover": "cvc4@1.8", "time": 0.05 },
-      "Make.interval_nonempty": { "prover": "cvc4@1.8", "time": 0.083 },
       "Make.interval_r_nonempy": { "prover": "cvc4@1.8", "time": 0.053 },
-      "Make.not_less_eq": { "prover": "cvc4@1.8", "time": 0.024 },
-      "Make.r_is_bigger": { "prover": "cvc5@1.1.2", "time": 0.051 },
       "Make.signleton": {
         "tactic": "split_vc",
         "children": [
