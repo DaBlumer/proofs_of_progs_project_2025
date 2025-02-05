@@ -1,0 +1,236 @@
+module Intf
+    use real.RealInfix    use int.Int    use real.FromInt
+
+    type t
+    
+    (*
+      Adding an "axiom" stating that t is not empty for type variant purposes.
+      This should be reasonable as we are trying to represent a field with the
+      type t and so should always have the 0 and 1 representatives.
+    *)
+    val non_empty : t
+
+    function real (q:t) : real    meta coercion function real
+
+    predicate equal (a b:t) = (a.real = b.real)
+
+    val (=) (a:t) (b:t) : bool ensures { equal a b = result }
+
+    axiom equal_is_eq: forall a b. equal a b -> a = b
+
+    predicate (<=) (a:t) (b:t) = (a.real <=. b.real)
+    predicate (<) (a:t) (b:t) = (a.real <. b.real)
+
+    val (<=) (a:t) (b:t) : bool ensures { result = (a <= b) }
+    val (<) (a:t) (b:t) : bool ensures { result = (a < b) }
+
+    use real.Abs
+    val abs (a:t) : t
+    ensures { result.real = abs a.real }
+
+    type ord = Eq | Lt | Gt
+    val compare (a:t) (b:t) : ord
+        ensures {
+            match result with
+            | Eq -> equal a b | Lt -> a < b | Gt -> b < a
+            end
+        }
+
+    val function (+) (a:t) (b:t) : t ensures { a.real +. b.real = result.real }
+    val function (-) (a:t) (b:t) : t ensures { a.real -. b.real = result.real }
+    val function (*) (a:t) (b:t) : t ensures { a.real *. b.real = result.real }
+
+    val function (/) (a:t) (b:t) : t
+        requires { b.real <> 0.0 }
+        ensures { result.real = a.real /. b.real }
+    
+    axiom dense: forall a b : t. a < b -> exists c. a < c < b
+    use real.Truncate
+
+    val of_int (i : int) : t ensures { result.real = from_int i }
+
+    val truncate (a:t) : int ensures { result = truncate a.real }
+    val floor (a:t) : int ensures { result = floor a.real }
+    val ceil (a:t) : int ensures { result = ceil a.real }
+end
+
+
+
+(*module Q : Intf
+    use real.Real
+    use real.RealInfix
+    
+    type t = {
+      p : int
+      q : int
+    } ensures { q <> 0 }
+    
+    function real (x : t) : real = x.p /. x.q
+
+    
+    predicate equal (a b : real) = (a.real = b.real)
+    predicate (<=) (a:real) (b:real) = (a.real <=. b.real)
+    predicate (<) (a:real) (b:real) = (a.real <. b.real)
+    
+    let (=) a b = a.p /. a.q = b.p /. b.q
+    let (<=) (a b : real) : bool = (a <= b)
+    let (<) = (<)
+    
+    
+    use real.Abs
+    let abs (a:t) : t = abs a
+    ensures { result.real = abs a.real }
+
+    type ord = Eq | Lt | Gt
+    val compare (a:t) (b:t) : ord
+        ensures {
+            match result with
+            | Eq -> equal a b | Lt -> a < b | Gt -> b < a
+            end
+        }
+
+    let function (+) (a:t) (b:t) : t ensures { a.real +. b.real = result.real }
+      = a +. b
+    let function (-) (a:t) (b:t) : t ensures { a.real -. b.real = result.real }
+      = a -. b
+    let function (*) (a:t) (b:t) : t ensures { a.real *. b.real = result.real }
+      = a *. b
+
+    val function (/) (a:t) (b:t) : t
+        requires { b.real <> 0.0 }
+        ensures { result.real = a.real /. b.real }
+
+    use real.Truncate
+    use real.FromInt
+
+    let function of_int (i : int) : t = (from_int i)
+
+    function truncate (a : real) : int = Truncate.truncate a
+    function floor (a:t) : int = Truncate.floor a
+    function ceil (a:t) : int = Truncate.ceil a
+end*)
+
+
+module Skel
+  use int.Int
+  use bool.Bool
+  use real.RealInfix
+  use option.Option
+
+  scope Make
+    clone Intf as V with axiom equal_is_eq, axiom dense
+  
+  
+  type bound_interval = {
+    lower : V.t;
+    upper : V.t;
+    lower_closed : bool;
+    upper_closed : bool
+  } invariant { 
+      V.(<=) lower upper /\
+      (V.(<) lower upper \/ (lower_closed /\ upper_closed))
+  } by { lower=V.non_empty; upper=V.non_empty; lower_closed=true; upper_closed=true }
+  
+  predicate mem_interval (e : V.t) (i : bound_interval) =
+    V.(i.lower < e < i.upper 
+       \/ (i.lower_closed /\ e = i.lower)
+       \/ (i.upper_closed /\ e = i.upper))
+  
+  
+  predicate incl_interval (i j : bound_interval) =
+    forall e:V.t. mem_interval e i -> mem_interval e j
+  
+  lemma not_less_eq : forall a b : V.t. V.(not a <= b -> b < a)
+  
+  predicate disj_interval (i j : bound_interval) =
+    forall x. not mem_interval x i \/ not mem_interval x j 
+
+  predicate before_interval (i j : bound_interval) =
+    V.(i.upper < j.lower
+    \/
+    (i.upper = j.lower /\ not(i.upper_closed /\ j.lower_closed)))
+  
+  lemma interval_nonempty :
+    forall i: bound_interval. exists x. mem_interval x i
+
+  lemma incl_interval_charac :
+    forall i j : bound_interval.
+      incl_interval i j
+      <->
+      V.(
+            j.lower <= i.lower
+         /\ i.upper <= j.upper
+         /\ (i.upper = j.upper -> i.upper_closed -> j.upper_closed)
+         /\ (i.lower = j.lower -> i.lower_closed -> j.lower_closed)      
+      )
+
+  lemma before_disj_interval : forall i j : bound_interval.
+    (before_interval i j \/ before_interval j i) <-> disj_interval i j
+  
+  
+  use array.Array
+  type u = {
+    unbound_down : option V.t;
+    unbound_up : option V.t;
+    bound : array bound_interval
+  } invariant {
+    (forall j. 0 <= j < bound.length - 1 -> before_interval bound[j] bound[j+1])
+    /\
+    bound.length > 0 ->
+      match unbound_down with
+      | None -> true
+      | Some x -> V.(x <= bound[0].lower /\ (bound[0].lower = x -> not bound[0].lower_closed))
+      end
+      /\
+      match unbound_up with
+      | None -> true
+      | Some x ->
+          let lst = bound[bound.length - 1] in
+          V.(lst.upper <= x /\ (lst.upper = x -> not lst.upper_closed))
+      end
+  }
+  (* just some unsound placeholders *)
+  predicate _fmla
+  val _code () : u
+    ensures { false }
+  val _codeb () : bool
+    ensures { false }
+  
+  let x : real = 1.0
+  
+  predicate mem (x:real) (l:u) = _fmla
+
+  let signleton (q:V.t) : u
+    ensures { _fmla } = _code ()
+
+  let gt (q:V.t) : u
+    ensures { _fmla } = _code ()
+
+  let ge (q:V.t) : u
+    ensures { _fmla } = _code ()
+
+  let except (x:V.t) : u
+    ensures { _fmla } = _code ()
+
+  let inter (u:u) (v:u) : u
+    ensures { _fmla } = _code ()
+
+  let union (u:u) (v:u) : u
+    ensures { _fmla } = _code ()
+
+  let subset (u:u) (v:u) : bool
+    ensures { _fmla } =  _codeb ()
+
+  let disjoint (u:u) (v:u) : bool
+    ensures { _fmla } = _codeb ()
+end
+end
+
+(*
+
+Turambar — 15/01/2025 10:34
+L'énoncé du projet est en partie faux, pour ceux qui viendraient pas
+Pour les fonctions strictement (dé)croissantes, la correction c'est "pour tout x, x € U -> op(x) € result" avec U l'union d'intervalle, et la complétude c'est montrer l'équivalence
+le problème étant qu'une fonction croissante préserve pas nécessairement les intervalles
+
+*)

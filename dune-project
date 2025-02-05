@@ -1,0 +1,12 @@
+(lang dune 3.1)
+(generate_opam_files true)
+(using dune_site 0.1)
+(name project)
+(authors "Author Name(s)")
+(maintainers "Maintainer Name(s)")
+(license LICENSE)
+(package
+ (name project)
+ (synopsis "short synopsis")
+ (description "longer description")
+ (depends why3find))
