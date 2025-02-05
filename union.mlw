@@ -136,14 +136,24 @@ module Skel
        \/ (i.lower_closed /\ e = i.lower)
        \/ (i.upper_closed /\ e = i.upper))
   
+  predicate mem_r_interval (e : real) (i : bound_interval) =
+       i.lower.V.real <. e <. i.upper.V.real
+    \/ (i.lower_closed /\ e = i.lower.V.real)
+    \/ (i.upper_closed /\ e = i.upper.V.real)
   
   predicate incl_interval (i j : bound_interval) =
     forall e:V.t. mem_interval e i -> mem_interval e j
   
+  predicate incl_r_interval (i j : bound_interval) =
+    forall e. mem_interval e i -> mem_interval e j
+  
   lemma not_less_eq : forall a b : V.t. V.(not a <= b -> b < a)
   
   predicate disj_interval (i j : bound_interval) =
-    forall x. not mem_interval x i \/ not mem_interval x j 
+    forall x. not mem_interval x i \/ not mem_interval x j
+
+  predicate disj_r_interval (i j : bound_interval) =
+    forall x. not mem_r_interval x i \/ not mem_r_interval x j
 
   predicate before_interval (i j : bound_interval) =
     V.(i.upper < j.lower
@@ -152,6 +162,9 @@ module Skel
   
   lemma interval_nonempty :
     forall i: bound_interval. exists x. mem_interval x i
+  
+  lemma interval_r_nonempy :
+    forall i: bound_interval. exists x. mem_r_interval x i
 
   lemma incl_interval_charac :
     forall i j : bound_interval.
@@ -163,10 +176,31 @@ module Skel
          /\ (i.upper = j.upper -> i.upper_closed -> j.upper_closed)
          /\ (i.lower = j.lower -> i.lower_closed -> j.lower_closed)      
       )
+  
+  lemma incl_interval_r_charac : forall i j : bound_interval.
+    incl_interval i j <-> incl_r_interval i j
 
   lemma before_disj_interval : forall i j : bound_interval.
     (before_interval i j \/ before_interval j i) <-> disj_interval i j
+
+  (* too inneficient *)
+  lemma r_is_bigger : forall i j : bound_interval.
+    disj_r_interval i j -> disj_interval i j
+
+  lemma before_disj_r_interval : forall i j : bound_interval.
+    (before_interval i j \/ before_interval j i) <-> disj_r_interval i j
   
+  let function clo_clo_mk a b
+    requires { V.(a <= b) }
+    ensures { forall x. mem_interval x result -> V.(a <= x <= b) }
+  = { lower_closed=True; upper_closed=True;
+      lower = a; upper = b }
+  
+  let function singleton_mk a
+    ensures { forall x. mem_r_interval x.V.real result <-> x = a }
+  = clo_clo_mk a a
+  
+  lemma singleton_mk : forall x y. mem_r_interval x.V.real (singleton_mk y) <-> x = y
   
   use array.Array
   type u = {
@@ -179,14 +213,14 @@ module Skel
     bound.length > 0 ->
       match unbound_down with
       | None -> true
-      | Some x -> V.(x <= bound[0].lower /\ (bound[0].lower = x -> not bound[0].lower_closed))
+      | Some x -> V.(x <= bound[0].lower)
       end
       /\
       match unbound_up with
       | None -> true
       | Some x ->
           let lst = bound[bound.length - 1] in
-          V.(lst.upper <= x /\ (lst.upper = x -> not lst.upper_closed))
+          V.(lst.upper <= x)
       end
   }
   (* just some unsound placeholders *)
@@ -198,13 +232,37 @@ module Skel
   
   let x : real = 1.0
   
-  predicate mem (x:real) (l:u) = _fmla
+  predicate mem (x:real) (l:u) =
+    match l.unbound_down with
+    | None -> false
+    | Some y -> x <. y.V.real
+    end
+    \/
+    match l.unbound_up with
+    | None -> false
+    | Some y -> x >. y.V.real
+    end
+    \/
+    exists i. 0 <= i < l.bound.length /\ mem_r_interval x l.bound[i]
 
   let signleton (q:V.t) : u
-    ensures { _fmla } = _code ()
+    ensures { forall x. mem x result <-> q.V.real = x }
+  =
+    let r = {
+      unbound_down = None; unbound_up = None;
+      bound = Array.make 1 (singleton_mk q)
+    } in
+    begin (* these hints are not necessary but make AltErgo faster for this specif *)
+      assert { forall x. (mem x r <-> mem_r_interval x (singleton_mk q))};
+      assert { forall x. (mem_r_interval x (singleton_mk q)) <-> x = q};
+      r
+    end
 
   let gt (q:V.t) : u
-    ensures { _fmla } = _code ()
+    ensures { forall x. mem x result <-> x >. q.V.real }
+  =
+    {unbound_down = None; bound = Array.empty ();
+     unbound_up = Some q}
 
   let ge (q:V.t) : u
     ensures { _fmla } = _code ()
