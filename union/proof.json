@@ -1,8 +1,11 @@
 {
   "profile": [
     { "prover": "cvc5@1.0.3", "size": 28, "time": 0.468 },
+    { "prover": "cvc5@1.1.2", "size": 40, "time": 0.408 },
+    { "prover": "z3@4.8.12", "size": 32, "time": 0.166 },
     { "prover": "alt-ergo@2.5.2", "size": 14, "time": 0.528 },
     { "prover": "z3@4.12.5", "size": 32, "time": 0.382 },
+    { "prover": "alt-ergo@2.6.0", "size": 16, "time": 0.269 },
     { "prover": "cvc4@1.8", "size": 25, "time": 0.513 }
   ],
   "proofs": {
@@ -10,30 +13,45 @@
     "Skel": {
       "Make.before_disj_interval": { "prover": "cvc4@1.8", "time": 0.206 },
       "Make.before_disj_r_interval": {
-        "prover": "alt-ergo@2.5.2",
-        "time": 0.153
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "cvc4@1.8", "time": 0.12 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.031 }
+        ]
       },
-      "Make.bound_interval": { "prover": "alt-ergo@2.5.2", "time": 0.013 },
-      "Make.clo_clo_mk": { "prover": "alt-ergo@2.5.2", "time": 0.044 },
-      "Make.disjoint": { "prover": "alt-ergo@2.5.2", "time": 0.034 },
-      "Make.except": { "prover": "alt-ergo@2.5.2", "time": 0.02 },
-      "Make.ge": { "prover": "alt-ergo@2.5.2", "time": 0.038 },
-      "Make.gt": { "prover": "alt-ergo@2.5.2", "time": 0.051 },
-      "Make.incl_interval_charac": { "prover": "cvc5@1.0.3", "time": 0.135 },
-      "Make.incl_interval_r_charac": {
-        "prover": "alt-ergo@2.5.2",
-        "time": 0.041
-      },
-      "Make.inter": { "prover": "alt-ergo@2.5.2", "time": 0.03 },
-      "Make.interval_nonempty": { "prover": "z3@4.12.5", "time": 0.045 },
+      "Make.bound_interval": { "prover": "cvc4@1.8", "time": 0.029 },
+      "Make.clo_clo_mk": { "prover": "cvc4@1.8", "time": 0.052 },
+      "Make.disjoint": { "prover": "cvc4@1.8", "time": 0.051 },
+      "Make.except": { "prover": "cvc4@1.8", "time": 0.043 },
+      "Make.ge": { "prover": "cvc4@1.8", "time": 0.04 },
+      "Make.gt": { "prover": "cvc4@1.8", "time": 0.276 },
+      "Make.incl_interval_charac": { "prover": "cvc4@1.8", "time": 0.374 },
+      "Make.incl_interval_r_charac": { "prover": "cvc4@1.8", "time": 0.043 },
+      "Make.inter": { "prover": "cvc4@1.8", "time": 0.05 },
+      "Make.interval_nonempty": { "prover": "cvc4@1.8", "time": 0.04 },
       "Make.interval_r_nonempy": { "prover": "cvc4@1.8", "time": 0.053 },
-      "Make.not_less_eq": { "prover": "alt-ergo@2.5.2", "time": 0.029 },
-      "Make.r_is_bigger": { "prover": "cvc5@1.0.3", "time": 3.4 },
-      "Make.signleton": { "prover": "alt-ergo@2.5.2", "time": 0.985 },
+      "Make.not_less_eq": { "prover": "cvc4@1.8", "time": 0.024 },
+      "Make.r_is_bigger": { "prover": "cvc5@1.1.2", "time": 1.4 },
+      "Make.signleton": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "cvc4@1.8", "time": 0.068 },
+          { "prover": "cvc4@1.8", "time": 0.074 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "cvc4@1.8", "time": 0.266 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.093 }
+            ]
+          },
+          { "prover": "cvc4@1.8", "time": 0.885 },
+          { "prover": "cvc4@1.8", "time": 0.16 }
+        ]
+      },
       "Make.singleton_mk": { "prover": "cvc4@1.8", "time": 0.126 },
-      "Make.subset": { "prover": "alt-ergo@2.5.2", "time": 0.037 },
-      "Make.u": { "prover": "z3@4.12.5", "time": 0.087 },
-      "Make.union": { "prover": "alt-ergo@2.5.2", "time": 0.04 }
+      "Make.subset": { "prover": "cvc4@1.8", "time": 0.064 },
+      "Make.u": { "prover": "z3@4.8.12", "time": 0.038 },
+      "Make.union": { "prover": "cvc4@1.8", "time": 0.052 }
     }
   }
 }
