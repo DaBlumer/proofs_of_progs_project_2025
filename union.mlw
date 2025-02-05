@@ -4,68 +4,9 @@ module Skel
   use real.RealInfix
   use option.Option
 
+  (*clone field.Intf as V with axiom equal_is_eq*)
+  use interval.BoundInterval
   scope Make
-    clone field.Intf as V with axiom equal_is_eq, axiom dense
-  
-  
-  type bound_interval = {
-    lower : V.t;
-    upper : V.t;
-    lower_closed : bool;
-    upper_closed : bool
-  } invariant { 
-      V.(<=) lower upper /\
-      (V.(<) lower upper \/ (lower_closed /\ upper_closed))
-  } by { lower=V.non_empty; upper=V.non_empty; lower_closed=true; upper_closed=true }
-
-  
-  predicate mem_r_interval (e : real) (i : bound_interval) =
-       i.lower.V.real <. e <. i.upper.V.real
-    \/ (i.lower_closed /\ e = i.lower.V.real)
-    \/ (i.upper_closed /\ e = i.upper.V.real)
-
-  
-  predicate incl_r_interval (i j : bound_interval) =
-    forall e. mem_r_interval e i -> mem_r_interval e j
-
-  predicate disj_r_interval (i j : bound_interval) =
-    forall x. not mem_r_interval x i \/ not mem_r_interval x j
-
-  predicate before_interval (i j : bound_interval) =
-    V.(i.upper < j.lower
-    \/
-    (i.upper = j.lower /\ not(i.upper_closed /\ j.lower_closed)))
-
-  
-  lemma interval_r_nonempy :
-    forall i: bound_interval. exists x. mem_r_interval x i
-
-  lemma incl_interval_charac :
-    forall i j : bound_interval.
-      incl_r_interval i j
-      <->
-      V.(
-            j.lower <= i.lower
-         /\ i.upper <= j.upper
-         /\ (i.upper = j.upper -> i.upper_closed -> j.upper_closed)
-         /\ (i.lower = j.lower -> i.lower_closed -> j.lower_closed)      
-      )
-
-  lemma before_disj_r_interval : forall i j : bound_interval.
-    (before_interval i j \/ before_interval j i) <-> disj_r_interval i j
-  
-  let function clo_clo_mk a b
-    requires { V.(a <= b) }
-    ensures { forall x. mem_r_interval x.V.real result -> V.(a <= x <= b) }
-  = { lower_closed=True; upper_closed=True;
-      lower = a; upper = b }
-  
-  let function singleton_mk a
-    ensures { forall x. mem_r_interval x.V.real result <-> x = a }
-  = clo_clo_mk a a
-  
-
-  
   use array.Array
   type u = {
     unbound_down : option V.t;
@@ -93,9 +34,9 @@ module Skel
     ensures { false }
   val _codeb () : bool
     ensures { false }
-  
+
   let x : real = 1.0
-  
+
   predicate mem (x:real) (l:u) =
     match l.unbound_down with
     | None -> false

@@ -2,7 +2,7 @@ module Intf
     use real.RealInfix    use int.Int    use real.FromInt
 
     type t
-    
+
     (*
       Adding an "axiom" stating that t is not empty for type variant purposes.
       This should be reasonable as we are trying to represent a field with the
@@ -43,8 +43,7 @@ module Intf
     val function (/) (a:t) (b:t) : t
         requires { b.real <> 0.0 }
         ensures { result.real = a.real /. b.real }
-    
-    axiom dense: forall a b : t. a < b -> exists c. a < c < b
+
     use real.Truncate
 
     val of_int (i : int) : t ensures { result.real = from_int i }
