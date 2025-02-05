@@ -1,0 +1,171 @@
+(*module Q : Intf
+    use real.Real
+    use real.RealInfix
+    
+    type t = {
+      p : int
+      q : int
+    } ensures { q <> 0 }
+    
+    function real (x : t) : real = x.p /. x.q
+
+    
+    predicate equal (a b : real) = (a.real = b.real)
+    predicate (<=) (a:real) (b:real) = (a.real <=. b.real)
+    predicate (<) (a:real) (b:real) = (a.real <. b.real)
+    
+    let (=) a b = a.p /. a.q = b.p /. b.q
+    let (<=) (a b : real) : bool = (a <= b)
+    let (<) = (<)
+    
+    
+    use real.Abs
+    let abs (a:t) : t = abs a
+    ensures { result.real = abs a.real }
+
+    type ord = Eq | Lt | Gt
+    val compare (a:t) (b:t) : ord
+        ensures {
+            match result with
+            | Eq -> equal a b | Lt -> a < b | Gt -> b < a
+            end
+        }
+
+    let function (+) (a:t) (b:t) : t ensures { a.real +. b.real = result.real }
+      = a +. b
+    let function (-) (a:t) (b:t) : t ensures { a.real -. b.real = result.real }
+      = a -. b
+    let function (*) (a:t) (b:t) : t ensures { a.real *. b.real = result.real }
+      = a *. b
+
+    val function (/) (a:t) (b:t) : t
+        requires { b.real <> 0.0 }
+        ensures { result.real = a.real /. b.real }
+
+    use real.Truncate
+    use real.FromInt
+
+    let function of_int (i : int) : t = (from_int i)
+
+    function truncate (a : real) : int = Truncate.truncate a
+    function floor (a:t) : int = Truncate.floor a
+    function ceil (a:t) : int = Truncate.ceil a
+end*)
+
+
+(*module Q : Intf
+    use real.Real
+    use real.RealInfix
+    
+    type t = {
+      p : int
+      q : int
+    } ensures { q <> 0 }
+    
+    function real (x : t) : real = x.p /. x.q
+
+    
+    predicate equal (a b : real) = (a.real = b.real)
+    predicate (<=) (a:real) (b:real) = (a.real <=. b.real)
+    predicate (<) (a:real) (b:real) = (a.real <. b.real)
+    
+    let (=) a b = a.p /. a.q = b.p /. b.q
+    let (<=) (a b : real) : bool = (a <= b)
+    let (<) = (<)
+    
+    
+    use real.Abs
+    let abs (a:t) : t = abs a
+    ensures { result.real = abs a.real }
+
+    type ord = Eq | Lt | Gt
+    val compare (a:t) (b:t) : ord
+        ensures {
+            match result with
+            | Eq -> equal a b | Lt -> a < b | Gt -> b < a
+            end
+        }
+
+    let function (+) (a:t) (b:t) : t ensures { a.real +. b.real = result.real }
+      = a +. b
+    let function (-) (a:t) (b:t) : t ensures { a.real -. b.real = result.real }
+      = a -. b
+    let function (*) (a:t) (b:t) : t ensures { a.real *. b.real = result.real }
+      = a *. b
+
+    val function (/) (a:t) (b:t) : t
+        requires { b.real <> 0.0 }
+        ensures { result.real = a.real /. b.real }
+
+    use real.Truncate
+    use real.FromInt
+
+    let function of_int (i : int) : t = (from_int i)
+
+    function truncate (a : real) : int = Truncate.truncate a
+    function floor (a:t) : int = Truncate.floor a
+    function ceil (a:t) : int = Truncate.ceil a
+end*)
+
+(*module Q : Intf
+    use real.Real
+    use real.RealInfix
+    
+    type t = {
+      p : int
+      q : int
+    } ensures { q <> 0 }
+    
+    function real (x : t) : real = x.p /. x.q
+
+    
+    predicate equal (a b : real) = (a.real = b.real)
+    predicate (<=) (a:real) (b:real) = (a.real <=. b.real)
+    predicate (<) (a:real) (b:real) = (a.real <. b.real)
+    
+    let (=) a b = a.p /. a.q = b.p /. b.q
+    let (<=) (a b : real) : bool = (a <= b)
+    let (<) = (<)
+    
+    
+    use real.Abs
+    let abs (a:t) : t = abs a
+    ensures { result.real = abs a.real }
+
+    type ord = Eq | Lt | Gt
+    val compare (a:t) (b:t) : ord
+        ensures {
+            match result with
+            | Eq -> equal a b | Lt -> a < b | Gt -> b < a
+            end
+        }
+
+    let function (+) (a:t) (b:t) : t ensures { a.real +. b.real = result.real }
+      = a +. b
+    let function (-) (a:t) (b:t) : t ensures { a.real -. b.real = result.real }
+      = a -. b
+    let function (*) (a:t) (b:t) : t ensures { a.real *. b.real = result.real }
+      = a *. b
+
+    val function (/) (a:t) (b:t) : t
+        requires { b.real <> 0.0 }
+        ensures { result.real = a.real /. b.real }
+
+    use real.Truncate
+    use real.FromInt
+
+    let function of_int (i : int) : t = (from_int i)
+
+    function truncate (a : real) : int = Truncate.truncate a
+    function floor (a:t) : int = Truncate.floor a
+    function ceil (a:t) : int = Truncate.ceil a
+end*)
+
+(*
+
+Turambar — 15/01/2025 10:34
+L'énoncé du projet est en partie faux, pour ceux qui viendraient pas
+Pour les fonctions strictement (dé)croissantes, la correction c'est "pour tout x, x € U -> op(x) € result" avec U l'union d'intervalle, et la complétude c'est montrer l'équivalence
+le problème étant qu'une fonction croissante préserve pas nécessairement les intervalles
+
+*)
