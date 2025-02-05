@@ -1,5 +1,6 @@
 why3session.xml*
 why3shapes.gz*
+*.bak
 /.why3find
 /_build
 /html

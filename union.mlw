@@ -37,7 +37,7 @@ module Skel
   lemma not_less_eq : forall a b : V.t. V.(not a <= b -> b < a)
   
   predicate disj_interval (i j : bound_interval) =
-    forall x. not mem_interval x i \/ not mem_interval x j
+    forall x. not mem_r_interval x i \/ not mem_r_interval x j
 
   predicate disj_r_interval (i j : bound_interval) =
     forall x. not mem_r_interval x i \/ not mem_r_interval x j
@@ -87,7 +87,7 @@ module Skel
     ensures { forall x. mem_r_interval x.V.real result <-> x = a }
   = clo_clo_mk a a
   
-  lemma singleton_mk : forall x y. mem_r_interval x.V.real (singleton_mk y) <-> x = y
+
   
   use array.Array
   type u = {

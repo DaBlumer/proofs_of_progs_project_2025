@@ -11,7 +11,7 @@
   "proofs": {
     "Intf": {},
     "Skel": {
-      "Make.before_disj_interval": { "prover": "cvc4@1.8", "time": 0.206 },
+      "Make.before_disj_interval": { "prover": "cvc5@1.1.2", "time": 2.2 },
       "Make.before_disj_r_interval": {
         "tactic": "split_vc",
         "children": [
@@ -28,10 +28,10 @@
       "Make.incl_interval_charac": { "prover": "cvc4@1.8", "time": 0.374 },
       "Make.incl_interval_r_charac": { "prover": "cvc4@1.8", "time": 0.043 },
       "Make.inter": { "prover": "cvc4@1.8", "time": 0.05 },
-      "Make.interval_nonempty": { "prover": "cvc4@1.8", "time": 0.04 },
+      "Make.interval_nonempty": { "prover": "cvc4@1.8", "time": 0.083 },
       "Make.interval_r_nonempy": { "prover": "cvc4@1.8", "time": 0.053 },
       "Make.not_less_eq": { "prover": "cvc4@1.8", "time": 0.024 },
-      "Make.r_is_bigger": { "prover": "cvc5@1.1.2", "time": 1.4 },
+      "Make.r_is_bigger": { "prover": "cvc5@1.1.2", "time": 0.051 },
       "Make.signleton": {
         "tactic": "split_vc",
         "children": [
