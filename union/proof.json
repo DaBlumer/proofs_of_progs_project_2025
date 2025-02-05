@@ -27,7 +27,7 @@
       "Make.inter": { "prover": "alt-ergo@2.5.2", "time": 0.03 },
       "Make.interval_nonempty": { "prover": "z3@4.12.5", "time": 0.045 },
       "Make.interval_r_nonempy": { "prover": "cvc4@1.8", "time": 0.053 },
-      "Make.not_less_eq": { "prover": "alt-ergo@2.5.2", "time": 0.012 },
+      "Make.not_less_eq": { "prover": "alt-ergo@2.5.2", "time": 0.029 },
       "Make.r_is_bigger": { "prover": "cvc5@1.0.3", "time": 3.4 },
       "Make.signleton": { "prover": "alt-ergo@2.5.2", "time": 0.985 },
       "Make.singleton_mk": { "prover": "cvc4@1.8", "time": 0.126 },
