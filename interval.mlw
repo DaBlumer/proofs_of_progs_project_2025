@@ -52,15 +52,93 @@ module BoundInterval
   lemma before_disj_r_interval : forall i j : bound_interval.
     (before_interval i j \/ before_interval j i) <-> disj_r_interval i j
 
+  let function __mk_interval lb l ub u
+    requires { V.(l <= u) /\ (l = u -> ub /\ lb) }
+  = { lower_closed=lb; lower=l; upper_closed=ub; upper=u }
+
   let function clo_clo_mk a b
     requires { V.(a <= b) }
     ensures { forall x. mem_r_interval x result -> a.V.real <=. x <=. b.V.real }
-  = { lower_closed=True; upper_closed=True;
-      lower = a; upper = b }
-  
+  = __mk_interval true a true b
+
+  let function clo_opn_mk a b
+    requires { V.(a < b) }
+    ensures { forall x. mem_r_interval x result -> a.V.real <=. x <. b.V.real }
+  = __mk_interval true a false b
+
+  let function opn_clo_mk a b
+    requires { V.(a < b) }
+    ensures { forall x. mem_r_interval x result -> a.V.real <. x <=. b.V.real }
+  = __mk_interval false a true b
 
   let function singleton_mk a
     ensures { forall x. mem_r_interval x result <-> x = a.V.real }
   = clo_clo_mk a a
 
+  lemma before_interval_trans : forall i j k.
+    before_interval i j -> before_interval j k -> before_interval i k
+
+end
+
+
+module BoundUnion
+  use BoundInterval
+  use int.Int
+  use array.Array
+  use exn.Exn
+
+  type bound_union = {
+     a : array bound_interval
+  } invariant {
+    forall j. 0 <= j < a.length - 1 -> before_interval a[j] a[j+1]
+  }
+
+  predicate mem_union (x:real) (bu : bound_union) =
+    exists j. 0 <= j < bu.a.length /\ mem_r_interval x bu.a[j]
+
+  let rec lemma all_before (bu : bound_union) (i j : int) : unit
+    requires { 0 <= i < j < bu.a.length }
+    ensures { before_interval bu.a[i] bu.a[j] }
+    variant { j - i }
+  = if j = i+1 then () else all_before bu (i+1) j
+
+
+  lemma mem_union_unique :
+    forall x. forall bu. forall i. 0 <= i < bu.a.length -> mem_r_interval x bu.a[i] ->
+      forall j. 0 <= j < i \/ i < j < bu.a.length -> not mem_r_interval x bu.a[j]
+
+  let insert (x: 'a) (a : array 'a) (idx : int) : array 'a
+    requires { 0 <= idx <= a.length }
+    ensures { result.length = a.length + 1 }
+    ensures { forall i. 0 <= i < idx -> result[i] = a[i] }
+    ensures { result[idx] = x }
+    ensures { forall i. idx < i <= a.length -> result[i] = a[i-1]}
+  =
+    append (append (sub a 0 idx) (make 1 x)) (sub a idx (a.length-idx))
+
+(*
+  let function add_interval (int : bound_interval) (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x result <-> (mem_union x bu \/ mem_r_interval x i) }
+  =
+    let ref i = 0 in
+    let ref t = empty () in
+    try
+      for i = 0 to bu.a.length - 1 do
+        if before_interval int bu.a[i] then
+           t <- insert int bu.a i;
+           raise Exit;
+        if incl_r_interval bu.a[i] int then
+           t <- copy bu.a;
+           t[i] <- int;
+           raise Exit;
+        if incl_r_interval int bu.a[i] then
+           t <- bu.a;
+           raise Exit;
+        if not before_interval bu.a[i] int then
+           t <- copy bu.a;
+           raise Exit;
+      done;
+      { a = insert int bu.a bu.a.length }
+    with Exit -> { a = t }
+*)
 end
