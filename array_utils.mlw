@@ -1,0 +1,28 @@
+module ArrayUtils
+  use array.Array
+  use int.Int
+
+  let insert (x: 'a) (b : array 'a) (idx : int) : array 'a
+    requires { 0 <= idx <= b.length }
+    ensures { result.length = b.length + 1 }
+    ensures { forall i. 0 <= i < idx -> result[i] = b[i] }
+    ensures { result[idx] = x }
+    ensures { forall i : int. idx <= i < b.length -> result[i+1] = b[i]}
+  =
+    let l1 = append (sub b 0 idx) (make 1 x) in
+    let l2 = (sub b idx (b.length-idx)) in
+    append l1 l2
+
+  let replace (a new : array 'a) (i j : int): array 'a
+    requires { 0 <= i <= j <= length a }
+    ensures { length result = length a + length new - (j - i) }
+    ensures { forall k. 0 <= k < i -> result[k] = a[k] }
+    ensures { forall k. i <= k < i + length new -> result[k] = new[k-i] }
+    (* very inneficient *)
+    ensures { forall k. i+length new <= k < i+length new + length a-j ->
+                        result[k] = a[k - length new + j - i] }
+  = let l1 = append (sub a 0 i) new in
+    let l2 = (sub a j (length a - j)) in
+    append l1 l2
+
+end
