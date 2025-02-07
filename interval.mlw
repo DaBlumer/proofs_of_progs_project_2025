@@ -88,13 +88,17 @@ module BoundInterval
   lemma before_interval_trans : forall i j k.
     before_interval i j -> before_interval j k -> before_interval i k
 
+
 end
+
+
 
 
 module BoundUnion
   use BoundInterval
   use int.Int
   use array.Array
+  use array_utils.ArrayUtils
   use exn.Exn
 
   type bound_union = {
@@ -102,6 +106,29 @@ module BoundUnion
   } invariant {
     forall j. 0 <= j < a.length - 1 -> before_interval a[j] a[j+1]
   }
+
+  type lax_bound_union = {
+     lax_a : array bound_interval
+  } invariant {
+    let a = lax_a in
+    forall j. 0 <= j < a.length - 1 ->
+       V.(a[j].lower <= a[Int.(j+1)].lower) /\
+       V.(a[j].lower = a[Int.(j+1)].upper) -> a[j+1].lower_closed -> a[j].lower_closed
+  }
+
+  predicate lax_mem_union (x:real) (lbu : lax_bound_union) =
+    exists j. 0 <= j < lbu.lax_a.length /\ mem_r_interval x lbu.lax_a[j]
+
+  let function lax_inj (bu : bound_union) : lax_bound_union =
+    { lax_a = bu.a }
+
+  let function lax_merge (lbu: lax_bound_union) (i : int) : lax_bound_union
+    requires { 0 <= i < lbu.lax_a.length - 1}
+    requires { V.(lbu.lax_a[Int.(i+1)].lower < lbu.lax_a[i].upper) }
+    ensures { result.lax_a.length = lbu.lax_a.length - 1 }
+    ensures { forall x. lax_mem_union x result <-> lax_mem_union x lbu }
+  =
+    lbu
 
   predicate mem_union (x:real) (bu : bound_union) =
     exists j. 0 <= j < bu.a.length /\ mem_r_interval x bu.a[j]
@@ -117,38 +144,40 @@ module BoundUnion
     forall x. forall bu. forall i. 0 <= i < bu.a.length -> mem_r_interval x bu.a[i] ->
       forall j. 0 <= j < i \/ i < j < bu.a.length -> not mem_r_interval x bu.a[j]
 
-  let insert (x: 'a) (a : array 'a) (idx : int) : array 'a
-    requires { 0 <= idx <= a.length }
-    ensures { result.length = a.length + 1 }
-    ensures { forall i. 0 <= i < idx -> result[i] = a[i] }
-    ensures { result[idx] = x }
-    ensures { forall i. idx < i <= a.length -> result[i] = a[i-1]}
-  =
-    append (append (sub a 0 idx) (make 1 x)) (sub a idx (a.length-idx))
-
-(*
   let function add_interval (int : bound_interval) (bu : bound_union) : bound_union
-    ensures { forall x. mem_union x result <-> (mem_union x bu \/ mem_r_interval x i) }
+    ensures { true \/ (forall x. mem_union x result
+                   <-> (mem_union x bu \/ mem_r_interval x int)) }
   =
-    let ref i = 0 in
-    let ref t = empty () in
+    exception Return (array bound_interval) in
     try
       for i = 0 to bu.a.length - 1 do
+        invariant { forall j. 0 <= j < i -> before_interval bu.a[i-1] int }
         if before_interval int bu.a[i] then
-           t <- insert int bu.a i;
-           raise Exit;
-        if incl_r_interval bu.a[i] int then
-           t <- copy bu.a;
+           let t = insert int bu.a i in
+           assert { i > 0 -> before_interval t[i-1] t[i] }; (* quicker *)
+           assert { forall j. 0 <= j < bu.a.length -> before_interval t[j] t[j+1] };
+           raise (Return t)
+        else if incl_interval bu.a[i] int then
+           let t = copy bu.a in
            t[i] <- int;
-           raise Exit;
-        if incl_r_interval int bu.a[i] then
-           t <- bu.a;
-           raise Exit;
-        if not before_interval bu.a[i] int then
-           t <- copy bu.a;
-           raise Exit;
+           raise (Return t)
+        else if incl_interval int bu.a[i] then
+           raise (Return (copy bu.a))
+        else if not (before_interval bu.a[i] int) then
+           raise (Return (empty())); (* TODO *)
+        assert {before_interval bu.a[i] int};
       done;
-      { a = insert int bu.a bu.a.length }
-    with Exit -> { a = t }
-*)
+      raise (Return (insert int bu.a bu.a.length));
+    with Return t -> { a = empty() }
+    end;
+
+    (*
+       Plan:
+        - lax unions
+        - mem for lax unions
+        - add interval to lax unions
+        - merge lax union to get equivalent strict union
+        - intersect interval with lax union
+        -
+    *)
 end

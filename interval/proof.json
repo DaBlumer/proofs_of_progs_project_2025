@@ -6,58 +6,73 @@
     { "prover": "cvc4@1.8", "size": 35, "time": 0.525 }
   ],
   "proofs": {
-    "BoundInterval": {
-      "__mk_interval": { "prover": "z3@4.8.12", "time": 0.038 },
-      "before_disj_r_interval": { "prover": "cvc4@1.8", "time": 0.087 },
-      "before_interval_trans": { "prover": "alt-ergo@2.6.0", "time": 0.082 },
-      "bound_interval": { "prover": "alt-ergo@2.6.0", "time": 0.024 },
-      "clo_clo_mk": { "prover": "alt-ergo@2.6.0", "time": 0.028 },
-      "clo_opn_mk": { "prover": "alt-ergo@2.6.0", "time": 0.049 },
-      "incl_interval_charac": { "prover": "cvc5@1.1.2", "time": 0.025 },
-      "interval_r_nonempy": { "prover": "cvc4@1.8", "time": 0.013 },
-      "opn_clo_mk": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.026 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.021 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.042 }
-            ]
-          }
-        ]
-      },
-      "singleton_mk": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.021 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.028 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.037 }
-            ]
-          }
-        ]
-      }
-    },
-    "BoundUnion": {
-      "all_before": { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-      "bound_union": { "prover": "z3@4.8.12", "time": 0.041 },
+    "ArrayUtils": {
       "insert": {
         "tactic": "split_vc",
         "children": [
+          { "prover": "alt-ergo@2.6.0", "time": 0.024 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.021 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.025 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.028 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.039 },
+          null
+        ]
+      }
+    },
+    "BoundInterval": {
+      "__mk_interval": { "prover": "z3@4.8.12", "time": 0.02 },
+      "before_disj_r_interval": { "prover": "cvc4@1.8", "time": 0.093 },
+      "before_interval": { "prover": "alt-ergo@2.6.0", "time": 0.026 },
+      "before_interval_trans": { "prover": "alt-ergo@2.6.0", "time": 0.052 },
+      "bound_interval": { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+      "clo_clo_mk": { "prover": "alt-ergo@2.6.0", "time": 0.027 },
+      "clo_opn_mk": { "prover": "alt-ergo@2.6.0", "time": 0.026 },
+      "incl_interval": { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+      "incl_interval_charac": { "prover": "cvc4@1.8", "time": 0.029 },
+      "interval_r_nonempy": { "prover": "cvc4@1.8", "time": 0.015 },
+      "mem_interval": { "prover": "alt-ergo@2.6.0", "time": 0.022 },
+      "opn_clo_mk": { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+      "singleton_mk": { "prover": "alt-ergo@2.6.0", "time": 0.029 }
+    },
+    "BoundUnion": {
+      "add_interval": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.6.0", "time": 0.024 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.019 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.023 },
+          { "prover": "cvc4@1.8", "time": 0.071 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.082 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.024 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.021 },
           { "prover": "alt-ergo@2.6.0", "time": 0.02 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.024 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.021 },
+          { "prover": "cvc4@1.8", "time": 0.02 },
           { "prover": "alt-ergo@2.6.0", "time": 0.018 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
-          { "prover": "z3@4.8.12", "time": 0.099 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.023 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.023 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.027 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.026 },
+          { "prover": "z3@4.8.12", "time": 0.025 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.022 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.018 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.018 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.025 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.022 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.022 }
         ]
       },
-      "mem_union_unique": { "prover": "z3@4.8.12", "time": 0.053 }
+      "all_before": { "prover": "alt-ergo@2.6.0", "time": 0.027 },
+      "bound_union": { "prover": "z3@4.8.12", "time": 0.036 },
+      "lax_bound_union": { "prover": "z3@4.8.12", "time": 0.044 },
+      "lax_inj": { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+      "lax_merge": {
+        "tactic": "split_vc",
+        "children": [ null, { "prover": "alt-ergo@2.6.0", "time": 0.029 } ]
+      },
+      "mem_union_unique": { "prover": "z3@4.8.12", "time": 0.038 }
     }
   }
 }
