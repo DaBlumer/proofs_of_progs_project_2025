@@ -18,7 +18,9 @@ module ArrayUtils
     ensures { length result = length a + length new - (j - i) }
     ensures { forall k. 0 <= k < i -> result[k] = a[k] }
     ensures { forall k. i <= k < i + length new -> result[k] = new[k-i] }
-    (* very inneficient *)
+    (* this postcondition is not necessary but makes the proof faster *)
+    ensures  { forall k. j <= k < length a ->
+                        result[i + length new + k - j] = a[k] }
     ensures { forall k. i+length new <= k < i+length new + length a-j ->
                         result[k] = a[k - length new + j - i] }
   = let l1 = append (sub a 0 i) new in

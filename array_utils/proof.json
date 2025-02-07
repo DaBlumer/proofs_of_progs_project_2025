@@ -25,9 +25,10 @@
           { "prover": "alt-ergo@2.6.0", "time": 0.028 },
           { "prover": "alt-ergo@2.6.0", "time": 0.026 },
           { "prover": "alt-ergo@2.6.0", "time": 0.032 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.022 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.022 },
-          { "prover": "alt-ergo@2.6.0", "time": 1.9 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.021 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.028 },
+          { "prover": "z3@4.8.12", "time": 0.026 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 }
         ]
       }
     }
