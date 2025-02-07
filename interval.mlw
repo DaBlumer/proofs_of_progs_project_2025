@@ -31,7 +31,7 @@ module BoundInterval
   predicate incl_r_interval (i j : bound_interval) =
     forall e. mem_r_interval e i -> mem_r_interval e j
 
-  let predicate incl_interval (i j : bound_interval) : bool
+  let function incl_interval (i j : bound_interval) : bool
   = any bool ensures {
       result <-> V.(
             j.lower <= i.lower
@@ -61,6 +61,78 @@ module BoundInterval
 
   lemma before_disj_r_interval : forall i j : bound_interval.
     (before_interval i j \/ before_interval j i) <-> disj_r_interval i j
+
+  let predicate strt_before_interval (i j : bound_interval) : bool
+  = any bool ensures {
+    result <-> V.(
+      i.lower < j.lower ||
+      (i.lower = j.lower && (i.lower_closed || not j.lower_closed))
+    )}
+  let predicate (<==) = strt_before_interval
+
+  lemma strt_before_linear : forall i j. i <== j \/ j <== i
+
+  let predicate end_after_interval (i j : bound_interval)
+  = any bool ensures {
+      result <-> V.(
+        j.upper < i.upper ||
+        (i.upper = j.upper && (i.upper_closed || not j.upper_closed))
+    )}
+  let predicate (==>) = end_after_interval
+
+  let function ndisj_interval (i j : bound_interval) : bool
+  = any bool ensures {
+    result <-> V.(
+      let (i, j) = if strt_before_interval i j then (i, j) else (j, i) in
+         j.lower <= i.upper
+      && (i.upper = j.lower -> i.upper_closed && j.lower_closed)
+    )
+  }
+
+  lemma ndisj_carac : forall i j :
+     bound_interval. ndisj_interval i j <-> not (disj_r_interval i j)
+
+  let function merge_intervals (i j : bound_interval) : bound_interval
+    requires { ndisj_interval i j }
+    ensures { forall x. mem_r_interval x result <->
+                        mem_r_interval x i \/ mem_r_interval x j }
+    ensures { let k = if i <== j then i else j in
+              result.lower = k.lower /\ result.lower_closed = k.lower_closed }
+    ensures { let k = if i ==> j then i else j in
+              result.upper = k.upper /\ result.upper_closed = k.upper_closed }
+  =
+    let (i, j) = if i <== j then (i, j) else (j, i) in
+    let lst = if i ==> j then i else j in
+    {lower=i.lower; lower_closed=i.lower_closed;
+     upper=lst.upper; upper_closed=lst.upper_closed}
+
+  let predicate (<<) i j = before_interval i j
+  let function (++) = merge_intervals
+
+  lemma tmp0 : forall i j. ndisj_interval i j <-> ndisj_interval j i
+  let lemma tmp1 (i j : bound_interval)
+    requires { incl_r_interval i j }
+    requires { incl_r_interval j i }
+    ensures { true \/ i = j }
+  =
+    assert { V.(i.lower <= j.lower /\ j.lower <= i.lower) };
+    assert { V.(i.upper <= j.upper /\ j.upper <= i.upper) };
+    assert { V.(i.upper = j.upper /\ i.lower = j.lower) };
+    assert { i.upper_closed = j.upper_closed }
+  let lemma tmp (i j k : bound_interval)
+    requires { k << i } requires { k << j }
+    ensures { true \/ k << (i++j) }
+  = ()
+  let lemma merge_comp_order (i j k: bound_interval)
+    requires { ndisj_interval i j }
+    (*ensures { (k << i /\ k << j) -> k << (i++j) }
+    ensures { (i << k /\ j << k) -> (i++j) << k }*)
+  =
+    if i <== j then
+      assert { (i++j).lower = i.lower /\ (i++j).lower_closed = i.lower_closed }
+    else
+      assert { j <== i }
+      (*assert { (i++j).lower = j.lower /\ (i++j).lower_closed = j.lower_closed }*)
 
   let function __mk_interval lb l ub u
     requires { V.(l <= u) /\ (l = u -> ub /\ lb) }
@@ -122,13 +194,17 @@ module BoundUnion
   let function lax_inj (bu : bound_union) : lax_bound_union =
     { lax_a = bu.a }
 
-  let function lax_merge (lbu: lax_bound_union) (i : int) : lax_bound_union
+  (*let function lax_merge (lbu: lax_bound_union) (i : int) : lax_bound_union
     requires { 0 <= i < lbu.lax_a.length - 1}
     requires { V.(lbu.lax_a[Int.(i+1)].lower < lbu.lax_a[i].upper) }
     ensures { result.lax_a.length = lbu.lax_a.length - 1 }
     ensures { forall x. lax_mem_union x result <-> lax_mem_union x lbu }
-  =
-    lbu
+  = lbu
+    (*let merge = {
+      lower=lbu.lax_a[i].lower;
+      upper=max lbu.lax_a[i].upper;
+      lower_closed=lax_a[i].lower_closed;
+      upper_closed=*)*)
 
   predicate mem_union (x:real) (bu : bound_union) =
     exists j. 0 <= j < bu.a.length /\ mem_r_interval x bu.a[j]
@@ -181,3 +257,4 @@ module BoundUnion
         -
     *)
 end
+
