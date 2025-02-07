@@ -169,3 +169,20 @@ Pour les fonctions strictement (dé)croissantes, la correction c'est "pour tout 
 le problème étant qu'une fonction croissante préserve pas nécessairement les intervalles
 
 *)
+
+
+  (*let ghost ndisj_carac_aux1 (i j : bound_interval) : real
+    requires {ndisj_interval i j}
+    ensures { mem_r_interval result i /\ mem_r_interval result j }
+  =
+    let (i,j) = if lax_before_interval i j then (i, j) else (j, i) in
+    if V.(i.upper = j.lower) then
+      i.upper.V.real
+    else
+      let y = V.(if i.upper <= j.upper then i.upper else j.upper) in
+      V.(y.real +. j.lower.real)/. 2.
+
+  let lemma ndisj_carac_aux2 (i j : bound_interval)
+    requires {ndisj_interval i j}
+    ensures {not disj_r_interval i j}
+  = let _ = ndisj_carac_aux1 i j in ()*)
