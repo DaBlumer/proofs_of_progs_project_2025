@@ -265,6 +265,30 @@ module BoundUnion
     done;
     { a = tmp.lax_a }
 
+  let lemma lax_add_interval_aux (u:lax_bound_union) (e:bound_interval) (i:int)
+    requires { 0 <= i <= u.lax_a.length }
+    requires { i>0 -> u.lax_a[i-1] <== e }
+    requires { e <== u.lax_a[i] }
+    ensures { forall x:int.true }
+  = ()
+  (*plan: make mem predicate for arbtrary array,
+    use it for the two variants of ordered unions,
+    prove this lemma for the untyped variant and use it  *)
+
+  let lax_add_interval (int : bound_interval) (bu: lax_bound_union) : lax_bound_union
+    ensures { forall x. lax_mem_union x result
+                    <-> lax_mem_union x bu \/ mem_r_interval x int }
+  =
+    let ref i = 0 in
+    while i < bu.lax_a.length && not int <== bu.lax_a[i] do
+      variant { bu.lax_a.length - i }
+      invariant { 0 <= i <= bu.lax_a.length}
+      invariant { i > 0 -> bu.lax_a[i-1] <== int }
+      i <- i+1
+    done;
+    let res = { lax_a = insert int bu.lax_a i } in
+    res
+
   let function add_interval (int : bound_interval) (bu : bound_union) : bound_union
     ensures { true \/ (forall x. mem_union x result
                    <-> (mem_union x bu \/ mem_r_interval x int)) }

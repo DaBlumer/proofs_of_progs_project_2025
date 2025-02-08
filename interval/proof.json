@@ -108,6 +108,37 @@
       },
       "all_before": { "prover": "alt-ergo@2.5.2", "time": 0.077 },
       "bound_union": { "prover": "z3@4.12.5", "time": 0.165 },
+      "lax_add_interval": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.5.2", "time": 0.035 },
+          { "prover": "alt-ergo@2.5.2", "time": 0.042 },
+          { "prover": "alt-ergo@2.5.2", "time": 0.039 },
+          { "prover": "alt-ergo@2.5.2", "time": 0.044 },
+          { "prover": "alt-ergo@2.5.2", "time": 0.039 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.5.2", "time": 0.052 },
+              { "prover": "alt-ergo@2.5.2", "time": 0.044 }
+            ]
+          },
+          { "prover": "alt-ergo@2.5.2", "time": 0.042 },
+          { "prover": "alt-ergo@2.5.2", "time": 0.203 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              {
+                "tactic": "split_vc",
+                "children": [
+                  null, { "prover": "alt-ergo@2.5.2", "time": 0.554 }
+                ]
+              },
+              { "prover": "z3@4.12.5", "time": 0.277 }
+            ]
+          }
+        ]
+      },
       "lax_bound_union": { "prover": "z3@4.12.5", "time": 0.133 },
       "lax_inj": { "prover": "alt-ergo@2.5.2", "time": 0.153 },
       "lax_merge": {
