@@ -13,7 +13,7 @@ module ArrayUtils
     let l2 = (sub b idx (b.length-idx)) in
     append l1 l2
 
-  let replace (a new : array 'a) (i j : int): array 'a
+  let function replace (a new : array 'a) (i j : int): array 'a
     requires { 0 <= i <= j <= length a }
     ensures { length result = length a + length new - (j - i) }
     ensures { forall k. 0 <= k < i -> result[k] = a[k] }
