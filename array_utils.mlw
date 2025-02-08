@@ -27,4 +27,16 @@ module ArrayUtils
     let l2 = (sub a j (length a - j)) in
     append l1 l2
 
+let replace_by_one (a : array 'a) (e : 'a) (i j : int): array 'a
+    requires { 0 <= i <= j <= length a }
+    ensures { length result = length a + 1 - (j - i) }
+    ensures { forall k. 0 <= k < i -> result[k] = a[k] }
+    ensures { result[i] = e }
+    (* this postcondition is not necessary but makes the proof faster *)
+    ensures  { forall k. j <= k < length a ->
+                        result[i + 1 + k - j] = a[k] }
+    ensures { forall k. i+1 <= k < i+1 + length a-j ->
+                        result[k] = a[k - 1 + j - i] }
+  = replace a (make 1 e) i j
+
 end
