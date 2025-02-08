@@ -291,41 +291,23 @@ module BoundUnion
     done;
     { lax_a = insert int bu.lax_a i }
 
-  let function add_interval (int : bound_interval) (bu : bound_union) : bound_union
-    ensures { true \/ (forall x. mem_union x result
-                   <-> (mem_union x bu \/ mem_r_interval x int)) }
+  let lax_union_union (bu bu' : lax_bound_union) : lax_bound_union
+    ensures { forall x. lax_mem_union x result
+                    <-> lax_mem_union x bu \/ lax_mem_union x bu' }
   =
-    exception Return (array bound_interval) in
-    try
-      for i = 0 to bu.a.length - 1 do
-        invariant { forall j. 0 <= j < i -> before_interval bu.a[i-1] int }
-        if before_interval int bu.a[i] then
-           let t = insert int bu.a i in
-           assert { i > 0 -> before_interval t[i-1] t[i] }; (* quicker *)
-           assert { forall j. 0 <= j < bu.a.length -> before_interval t[j] t[j+1] };
-           raise (Return t)
-        else if incl_interval bu.a[i] int then
-           let t = copy bu.a in
-           t[i] <- int;
-           raise (Return t)
-        else if incl_interval int bu.a[i] then
-           raise (Return (copy bu.a))
-        else if not (before_interval bu.a[i] int) then
-           raise (Return (empty())); (* TODO *)
-        assert {before_interval bu.a[i] int};
-      done;
-      raise (Return (insert int bu.a bu.a.length));
-    with Return t -> { a = empty() }
-    end;
+    let ref i = 0 in
+    let ref tmp = {lax_a = copy bu.lax_a} in
+    while i < length bu'.lax_a do
+      variant { length bu'.lax_a - i }
+      invariant { 0 <= i <= length bu'.lax_a }
+      invariant { forall j. 0 <= j < length tmp.lax_a - 1 ->
+                  tmp.lax_a[j]<==tmp.lax_a[j+1] }
+      invariant { forall x. lax_mem_union x tmp <->
+                            lax_mem_union x bu \/ gen_mem_sub_union x bu'.lax_a 0 i}
+      tmp <- lax_add_interval bu'.lax_a[i] tmp;
+      i <- i + 1
+    done;
+    tmp
 
-    (*
-       Plan:
-        - lax unions
-        - mem for lax unions
-        - add interval to lax unions
-        - merge lax union to get equivalent strict union
-        - intersect interval with lax union
-        -
-    *)
 end
 
