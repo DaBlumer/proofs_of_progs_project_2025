@@ -8,6 +8,64 @@
     { "prover": "cvc4@1.8", "size": 35, "time": 0.525 }
   ],
   "proofs": {
+    "ArraySort": {
+      "sort": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
+          {
+            "tactic": "split_vc",
+            "children": [ { "prover": "alt-ergo@2.6.0", "time": 0.025 } ]
+          },
+          {
+            "tactic": "split_vc",
+            "children": [ { "prover": "alt-ergo@2.6.0", "time": 0.028 } ]
+          },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.033 }
+            ]
+          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.037 }
+            ]
+          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.054 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.028 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.147 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.116 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.75 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.039 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.068 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.6.0", "time": 0.098 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.041 }
+            ]
+          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.027 }
+        ]
+      },
+      "sort_aux": { "prover": "z3@4.8.12", "time": 0.409 },
+      "sort_aux2": { "prover": "alt-ergo@2.6.0", "time": 0.045 }
+    },
     "ArrayUtils": {
       "insert": {
         "tactic": "split_vc",

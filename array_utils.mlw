@@ -64,19 +64,28 @@ module ArraySort
       assert { forall i j. 0 <= i < j < length a - 1 -> le a[i] a[j] };
     end
 
-  let rec sort (a : array elt) (ghost p: elt -> bool) : array elt
+  let lemma sort_aux2 (a b : array elt) (i j : int) (x : elt)
+    requires { 0 <= i <= j < length a }
+    requires { exchange a b i j }
+    ensures { (exists k. 0 <= k < length a /\ a[k] = x)
+          <-> (exists k. 0 <= k < length b /\ b[k] = x) }
+  = ()
+
+  let rec sort (a : array elt) : array elt
     ensures { sorted result }
     ensures { length a = length result }
-    ensures { (exists j. 0 <= j < length result /\ p result[j]) <->
-              (exists j. 0 <= j < length a /\ p a[j]) }
+    ensures { forall j. 0 <= j < length a ->
+                   (exists i. 0 <= i < length a /\ result[i] = a[j])
+                 /\(exists i. 0 <= i < length a /\ result[j] = a[i]) }
   =
     let res = copy a in
     for i = 0 to length res - 1 do
       invariant { forall j k. 0 <= j < i <= k < length res -> le res[j] res[k] }
       invariant { forall n. 0 <= n < i - 1 -> le res[n] res[n+1] }
       invariant {forall j k. 0 <= j < i <= k < length res -> le res[j] res[k]}
-      invariant { (exists j. 0 <= j < length res /\ p res[j]) <->
-              (exists j. 0 <= j < length a /\ p a[j]) }
+      invariant { forall j. 0 <= j < length a ->
+                   (exists i. 0 <= i < length a /\ res[i] = a[j])
+                 /\(exists i. 0 <= i < length a /\ res[j] = a[i]) }
       let ref idx_min = i in
       for j = i+1 to length res - 1 do
         invariant { 0 <= idx_min < length res }
