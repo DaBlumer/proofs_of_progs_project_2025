@@ -112,8 +112,22 @@ module BoundInterval
     {lower=i.lower; lower_closed=i.lower_closed;
      upper=lst.upper; upper_closed=lst.upper_closed}
 
+  let function inter_intervals (i j : bound_interval) : bound_interval
+    requires { ndisj_interval i j }
+    ensures { forall x. mem_r_interval x result <->
+                        mem_r_interval x i /\ mem_r_interval x j }
+    ensures { let k = if i <== j then j else i in
+              result.lower = k.lower /\ result.lower_closed = k.lower_closed }
+    ensures { let k = if i ==> j then j else i in
+              result.upper = k.upper /\ result.upper_closed = k.upper_closed }
+  =
+    let nf, nl = (if i <== j then j else i), (if i ==> j then j else i) in
+    {lower=nf.lower; lower_closed=nf.lower_closed;
+     upper=nl.upper; upper_closed=nl.upper_closed}
+
   let predicate (<<) i j = before_interval i j
   let function (++) = merge_intervals
+  let function (^^) = inter_intervals
 
   (*lemma tmp0 : forall i j. ndisj_interval i j <-> ndisj_interval j i*)
 
@@ -122,21 +136,24 @@ module BoundInterval
 
   let lemma merge_intervals_comm (i j : bound_interval) : unit
     requires { ndisj_interval i j }
-    ensures { i++j = j++i }
-  =
-    assert {incl_r_interval (i++j) (j++i)};
-    assert {incl_r_interval (j++i) (i++j)}
+    ensures { i++j=j++i
+              by incl_r_interval(i++j)(j++i)/\incl_r_interval(j++i)(i++j) } = ()
 
-  let lemma merge_comp_order_aux (i j k: bound_interval)
+  let lemma inter_intervals_comm (i j : bound_interval) : unit
     requires { ndisj_interval i j }
-    requires { k << i /\ k << j }
-    ensures { k << (i++j) }
+    ensures { i^^j=j^^i
+              by incl_r_interval(i^^j)(j^^i)/\incl_r_interval(i^^j)(j^^i) } = ()
+
+  let lemma merge_union_comp_order (i j k: bound_interval)
+    requires { ndisj_interval i j }
+    ensures { (k << i /\ k << j) -> k << (i++j) /\ k << (i^^j) }
+    ensures { (i << k /\ j << k) -> (i++j) << k /\ (i^^j) << k}
   = ()
 
-  let lemma merge_comp_order (i j k: bound_interval)
+let lemma merge_union_comp_order' (i j k: bound_interval)
     requires { ndisj_interval i j }
-    ensures { (k << i /\ k << j) -> k << (i++j) }
-    ensures { (i << k /\ j << k) -> (i++j) << k }
+    ensures { (k <== i /\ k <== j) -> k <== (i++j) /\ k <== (i^^j) }
+    ensures { (i <== k /\ j <== k) -> (i++j) <== k /\ (i^^j) <== k}
   = ()
 
   let function __mk_interval lb l ub u
@@ -165,9 +182,14 @@ module BoundInterval
   lemma before_interval_trans : forall i j k.
     before_interval i j -> before_interval j k -> before_interval i k
 
+  lemma starts_before_trans : forall i j k.
+    i <== j /\ j <== k -> i <== k
+
   lemma order_mix_trans : forall i j k.
     i << j /\ j <== k -> i << k
 
+  clone array_utils.ArraySort as LaxS
+        with type elt = bound_interval, predicate le = (<==), val le = (<==)
 
 end
 
@@ -215,9 +237,15 @@ module BoundUnion
 
   let rec lemma all_before (bu : bound_union) (i j : int) : unit
     requires { 0 <= i < j < bu.a.length }
-    ensures { before_interval bu.a[i] bu.a[j] }
+    ensures { bu.a[i] << bu.a[j] }
     variant { j - i }
   = if j = i+1 then () else all_before bu (i+1) j
+
+  let rec lemma lax_all_before (bu : lax_bound_union) (i j : int) : unit
+    requires { 0 <= i < j < bu.lax_a.length }
+    ensures { bu.lax_a[i] <== bu.lax_a[j] }
+    variant { j - i }
+  = if j = i+1 then () else lax_all_before bu (i+1) j
 
   lemma mem_union_unique :
     forall x. forall bu. forall i. 0 <= i < bu.a.length -> mem_r_interval x bu.a[i] ->
@@ -315,5 +343,50 @@ module BoundUnion
   =
     lax_to_strict (lax_union_union (lax_inj bu) (lax_inj bu'))
 
+  let array_to_lax_bound_union (a : array bound_interval) : lax_bound_union
+    ensures { forall x. gen_mem_union x a <-> lax_mem_union x result }
+  = { lax_a = LaxS.sort a }
+
+  let lax_bound_union_to_array (lu: lax_bound_union) : array bound_interval
+    ensures { forall x. gen_mem_union x result <-> lax_mem_union x lu }
+  = lu.lax_a
+
+  let gen_inter_interval (int : bound_interval) (a : array bound_interval) : array bound_interval
+    ensures { forall x. gen_mem_union x result
+                    <-> gen_mem_union x a /\ mem_r_interval x int }
+  =
+    let ref i = 0 in
+    let ref tmp = make 0 (singleton_mk V.non_empty) in
+    while i < length a do
+      variant { length a - i }
+      invariant { 0 <= i <= length a }
+      invariant { forall x. gen_mem_union x tmp <->
+                            gen_mem_sub_union x a 0 i /\ mem_r_interval x int }
+      if ndisj_interval int a[i] then
+        let inter = int ^^ a[i] in tmp <- replace_by_one tmp inter (length tmp) (length tmp)
+      else ();
+      i <- i + 1
+    done;
+    tmp
+
+  let inter_interval (int : bound_interval) (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x result <->
+                        mem_union x bu /\ mem_r_interval x int }
+  =
+    let gen_bu = lax_bound_union_to_array (lax_inj bu) in
+    let res = gen_inter_interval int gen_bu in
+    lax_to_strict (array_to_lax_bound_union res)
+
+  let inter_union (bu bu' : bound_union) : bound_union
+    ensures { forall x. mem_union x result <->
+                        mem_union x bu /\ mem_union x bu' }
+  =
+    let ref result = { a = empty () } in
+    for i = 0 to bu'.a.length - 1 do
+      invariant { forall x. mem_union x result <->
+                            mem_union x bu /\ gen_mem_sub_union x bu'.a 0 i }
+      result <- union_union result (inter_interval bu'.a[i] bu)
+    done;
+    result
 end
 

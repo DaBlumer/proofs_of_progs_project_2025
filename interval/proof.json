@@ -212,6 +212,25 @@
         ]
       },
       "gen_mem_sub_union": { "prover": "alt-ergo@2.6.0", "time": 0.055 },
+      "inter_interval": { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+      "inter_union": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.6.0", "time": 0.056 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.054 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.035 }
+            ]
+          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.18 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.091 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 }
+        ]
+      },
       "lax_add_interval": {
         "tactic": "split_vc",
         "children": [
@@ -246,6 +265,10 @@
       },
       "lax_all_before": { "prover": "alt-ergo@2.6.0", "time": 0.03 },
       "lax_bound_union": { "prover": "z3@4.8.12", "time": 0.065 },
+      "lax_bound_union_to_array": {
+        "prover": "alt-ergo@2.6.0",
+        "time": 0.06
+      },
       "lax_inj": { "prover": "alt-ergo@2.6.0", "time": 0.066 },
       "lax_merge": {
         "tactic": "split_vc",
