@@ -309,5 +309,11 @@ module BoundUnion
     done;
     tmp
 
+  let union_union (bu bu' : bound_union) : bound_union
+    ensures { forall x. mem_union x result
+                    <-> mem_union x bu \/ mem_union x bu' }
+  =
+    lax_to_strict (lax_union_union (lax_inj bu) (lax_inj bu'))
+
 end
 

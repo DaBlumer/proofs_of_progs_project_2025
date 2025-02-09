@@ -185,7 +185,8 @@
       },
       "mem_union_unique": { "prover": "z3@4.8.12", "time": 0.109 },
       "relating_orders": { "prover": "z3@4.8.12", "time": 0.047 },
-      "replace_mem_union": { "prover": "alt-ergo@2.6.0", "time": 0.109 }
+      "replace_mem_union": { "prover": "alt-ergo@2.6.0", "time": 0.109 },
+      "union_union": { "prover": "alt-ergo@2.6.0", "time": 0.043 }
     }
   }
 }
