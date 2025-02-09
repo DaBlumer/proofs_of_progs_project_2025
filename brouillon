@@ -186,3 +186,24 @@ le problème étant qu'une fonction croissante préserve pas nécessairement les
     requires {ndisj_interval i j}
     ensures {not disj_r_interval i j}
   = let _ = ndisj_carac_aux1 i j in ()*)
+
+
+        (* assert { forall x. mem_r_interval x inter <-> *)
+        (*                    mem_r_interval x int /\ mem_r_interval x a[i] }; *)
+        (* label H in tmp <- replace_by_one tmp inter (length tmp) (length tmp); *)
+        (* assert { forall x. gen_mem_union x tmp <-> *)
+        (*                    gen_mem_sub_union x tmp 0 (length tmp - 1) \/ gen_mem_sub_union x tmp (length tmp - 1) (length tmp)}; *)
+        (* assert { forall x. gen_mem_sub_union x tmp 0 (length tmp - 1) <-> gen_mem_union x (tmp at H) }; *)
+        (* assert { tmp[length tmp - 1] = inter }; *)
+        (* assert { forall x. gen_mem_sub_union x tmp (length tmp - 1) (length tmp) <-> mem_r_interval x inter }; *)
+        (* assert { forall x. gen_mem_union x tmp <-> *)
+        (*                    gen_mem_union x (tmp at H) \/ mem_r_interval x inter } *)
+
+
+  let rec lemma csort_aux_1 (a b: array elt) (i j k l: int)
+    requires { 0 <= i <= k <= l < j <= length a }
+    requires { forall n. i <= n < j -> le a[l] a[n] }
+    requires { exchange a b k l }
+    ensures { forall n. i <= n < j -> le b[k] b[n] }
+  =
+    ()

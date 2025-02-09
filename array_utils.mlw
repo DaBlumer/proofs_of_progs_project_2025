@@ -40,3 +40,55 @@ let replace_by_one (a : array 'a) (e : 'a) (i j : int): array 'a
   = replace a (make 1 e) i j
 
 end
+
+module ArraySort
+  use int.Int
+  use array.Array
+  use array.ArraySwap
+
+  type elt
+  predicate le elt elt
+  clone array.Sorted with type elt = elt, predicate le = le
+
+  val le (a b : elt) : bool ensures { result <-> le a b }
+  axiom le_trans : forall a b c. le a b /\ le b c -> le a c
+  axiom le_refl : forall a. le a a
+  axiom le_lin : forall a b. le a b \/ le b a
+
+  let rec lemma sort_aux (a : array elt)
+    requires { forall i. 0 <= i < length a - 1 -> le a[i] a[i+1] }
+    ensures { forall i j. 0 <= i < j < length a -> le a[i] a[j] }
+    variant {length a}
+  = if length a > 0 then begin
+      sort_aux (sub a 0 (length a - 1));
+      assert { forall i j. 0 <= i < j < length a - 1 -> le a[i] a[j] };
+    end
+
+  let rec sort (a : array elt) (ghost p: elt -> bool) : array elt
+    ensures { sorted result }
+    ensures { length a = length result }
+    ensures { (exists j. 0 <= j < length result /\ p result[j]) <->
+              (exists j. 0 <= j < length a /\ p a[j]) }
+  =
+    let res = copy a in
+    for i = 0 to length res - 1 do
+      invariant { forall j k. 0 <= j < i <= k < length res -> le res[j] res[k] }
+      invariant { forall n. 0 <= n < i - 1 -> le res[n] res[n+1] }
+      invariant {forall j k. 0 <= j < i <= k < length res -> le res[j] res[k]}
+      invariant { (exists j. 0 <= j < length res /\ p res[j]) <->
+              (exists j. 0 <= j < length a /\ p a[j]) }
+      let ref idx_min = i in
+      for j = i+1 to length res - 1 do
+        invariant { 0 <= idx_min < length res }
+        invariant { idx_min >= i } (* needed for external invariant (csort_aux_1) *)
+        invariant { forall k. i <= k < j <= length res -> le res[idx_min] res[k] }
+        if le res[j] res[idx_min] then
+          begin
+            idx_min <- j;
+          end
+      done;
+      swap res i idx_min;
+    done;
+    res
+
+end
