@@ -523,6 +523,11 @@ module BoundUnion
     ensures { not (mem_union x bu) }
   = ()
 
+  let lemma aux_tmp (i j k : bound_interval)
+    requires { i << j << k }
+    ensures { exists x. mem_r_interval x j /\ x .<- k /\ x ->. i }
+  = ()
+
   let lemma not_empty_union (bu:bound_union)
     requires { length bu.a > 0 }
     ensures { exists x. mem_union x bu }
@@ -601,7 +606,8 @@ module BoundUnion
     else if int << bu.a[i] then
       begin
         assert { forall j. 0 <= j < i -> disj_r_interval bu.a[j] int };
-        assert { forall j. i <= j < length bu.a -> (disj_r_interval int bu.a[j] by int << bu.a[j]) };
+        assert { forall j. i <= j < length bu.a ->
+                 (disj_r_interval int bu.a[j] by int << bu.a[j]) };
         assert { forall x. mem_r_interval x int -> not mem_union x bu };
         assert { length bu.a > 0 };
         assert { exists x. mem_union x bu };
@@ -609,12 +615,7 @@ module BoundUnion
         false
       end
     else begin
-      assert { ndisj_interval bu.a[i] int };
-      if incl_interval int bu.a[i] then
-        begin
-          assert { (forall x. (mem_r_interval x int -> mem_union x bu)) };
-          true
-        end
+      if incl_interval int bu.a[i] then true
       else
         begin
           assert {
@@ -623,22 +624,24 @@ module BoundUnion
                 (exists x. mem_r_interval x int /\ x .<- bu.a[0])
               else
                 (exists x. mem_r_interval x int /\ x .<- bu.a[i] /\ x ->. bu.a[i-1])
-            else (int |=> bu.a[i]) /\
-              if i = bu.a.length - 1 then
-                (exists x. mem_r_interval x int /\ x ->. bu.a[i])
-              else if bu.a[i].upper = int.upper then
-                let x = int.upper.V.real in
-                (V.(bu.a[i].upper <= bu.a[Int.(i+1)].lower /\ (bu.a[i].upper = bu.a[Int.(i+1)].lower -> not bu.a[Int.(i+1)].lower_closed)) by bu.a[i]<<bu.a[i+1])
-                /\
-                V.(mem_r_interval x int /\ x .<- bu.a[Int.(i+1)] by bu.a[i]<<bu.a[Int.(i+1)] /\ x ->. bu.a[i])
-              else V.(
-                (exists x. mem_r_interval x int /\ x .<- bu.a[Int.(i+1)] /\ x ->. bu.a[i])
-                by (let r = if bu.a[Int.(i+1)].lower < int.upper then bu.a[Int.(i+1)].lower else int.upper in
-                let x = (bu.a[i].upper.real +. r.real) /. 2.0 in
-                mem_r_interval x int /\ x .<- bu.a[Int.(i+1)] /\ x ->. bu.a[i])
-              )
+            else (int |=> bu.a[i])
           };
           false
         end
     end
+
+  let incl_union_union (bu bu' : bound_union)
+    ensures { result <-> forall x. (mem_union x bu -> mem_union x bu') }
+  =
+    let ref i = 0 in
+    while i < length bu.a && incl_interval_union bu.a[i] bu' do
+      invariant { 0 <= i <= length bu.a }
+      invariant { forall j. 0 <= j < i ->
+                  forall x. (mem_r_interval x bu.a[j] -> mem_union x bu') }
+      variant { length bu.a - i }
+      i <- i+1
+    done;
+    i = length bu.a
+
+
 end
