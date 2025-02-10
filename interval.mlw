@@ -415,7 +415,13 @@ module BoundUnion
       invariant { forall x. gen_mem_union x tmp <->
                             gen_mem_sub_union x a 0 i /\ mem_r_interval x int }
       if ndisj_interval int a[i] then
-        let inter = int ^^ a[i] in tmp <- replace_by_one tmp inter (length tmp) (length tmp)
+        begin
+          let inter = int ^^ a[i] in
+          tmp <- replace_by_one tmp inter (length tmp) (length tmp);
+          assert { forall x. gen_mem_union x tmp <->
+                   ( (gen_mem_sub_union x a 0 i /\ mem_r_interval x int)
+                     \/ mem_r_interval x tmp[length tmp - 1]) }
+        end
       else ();
       i <- i + 1
     done;

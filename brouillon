@@ -322,3 +322,12 @@ LOG of my assertion debugging
       )
     in assert {mem_r_interval x j /\ x .<- k /\ x ->. i}
 FIRST WORKING VERSION OF THIS LEMMA
+
+
+  lemma before_disj_r_interval : forall i j : bound_interval.
+    disj_r_interval i j <-> (
+        before_interval i j
+     \/ beofre_interval j i
+     \/ V.(i.upper = j.lower /\ not i.upper_closed /\ j.lower_closed)
+     \/ V.(i.lower = j.upper /\ 
+    )
