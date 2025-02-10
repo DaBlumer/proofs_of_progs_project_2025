@@ -207,3 +207,89 @@ le problème étant qu'une fonction croissante préserve pas nécessairement les
     ensures { forall n. i <= n < j -> le b[k] b[n] }
   =
     ()
+
+
+
+    let ref i = 0 in
+    while i < length result.a do
+      variant { length result.a - i }
+      invariant { 0 <= i <= length result.a }
+      invariant { forall x. x <> e -> (mem_union x result <-> mem_union x bu) }
+      invariant { not gen_mem_sub_union e result.a 0 i }
+      invariant { forall j. 0<=j<result.a.length-1 -> result.a[j] << result.a[j+1] }
+      let int = result.a[i] in
+      let new_a = if not mem_interval e int then copy result.a else
+        if V.(int.lower = int.upper) then
+          replace result.a (empty()) i (i+1)
+        else if V.(int.lower < e < int.upper) then
+          let int, int' = except_interval_inside int e in
+          let nw = make 2 int in let _ = nw[1]<-int' in
+          let res = (replace (result.a) nw i (i+1)) in
+          res
+        else if V.((e=int.lower&&int.lower_closed)
+                 ||(e=int.upper&&int.upper_closed)) then begin
+          replace (result.a) (make 1 (except_interval_border int e)) i (i+1)
+        end else
+          copy result.a
+      in result <- { a=new_a };
+      i <- i + 1
+    done;
+
+
+
+LOG of my assertion debugging
+  let gen_except_union (a : array bound_interval) (e : V.t)
+    ensures { forall x.
+              ((gen_mem_union x a /\ x<>e) <-> gen_mem_union x result) }
+  =
+    let ref res = empty () in
+    for i = 0 to length a - 1 do
+      invariant { forall x. ( (gen_mem_sub_union x a 0 i /\ x<>e) <->
+                              (gen_mem_union x res) ) }
+
+      assert { forall x. ( (gen_mem_sub_union x a 0 (i+1) /\ x<>e) <->
+                               ( (gen_mem_sub_union x a 0 i/\x<>e)
+                                  \/(mem_r_interval x a[i]/\x<>e)) ) };
+
+      if not mem_interval e a[i] then
+        begin
+          res <- (append res (make 1 a[i]));
+          assert { forall x. ((mem_r_interval x a[i] /\ x<>e) ->
+                     (gen_mem_union x res by mem_r_interval x res[length res - 1])) };
+          (* assert { forall x. gen_mem_union x res -> *)
+          (*          ((gen_mem_sub_union x a 0 i /\ x<>e)\/(mem_r_interval x a[i])) }; *)
+          (* assert { forall x. ( (gen_mem_sub_union x a 0 (i+1) /\ x<>e) <-> *)
+          (*                     (gen_mem_union x res) ) } *)
+        end
+      else if V.(a[i].lower = a[i].upper) then
+        begin
+          (*assert { forall x. ( (gen_mem_sub_union x a 0 (i+1) /\ x<>e) <->
+                               (gen_mem_union x res) ) } *)
+        end
+      else if mem_interval_border e a[i] then
+        begin
+          let nint = except_interval_border a[i] e in
+          (*assert { forall x. ( (mem_r_interval x a[i] /\ x<>e) <->
+                               (mem_r_interval x nint) ) };*)
+          res <- append res (make 1 nint);
+          assert { forall x. mem_r_interval x a[i] /\ x <> e -> gen_mem_union x res
+                             by mem_r_interval x res[length res - 1] };
+          (*assert { forall x. ( ( (gen_mem_sub_union x a 0 i/\x<>e)
+                                  \/(mem_r_interval x a[i]/\x<>e)) ->
+                                  (gen_mem_union x res) ) } *)
+        end
+      else if mem_interval_inside e a[i] then
+        begin
+          let int,int' = except_interval_inside a[i] e in
+          (*assert { forall x. (mem_r_interval x a[i] /\ x <> e) <->
+            (mem_r_interval x int \/mem_r_interval x int' ) };*)
+          res <- append res (make 1 int);
+          res <- append res (make 1 int');
+          assert { let j = length res - 2 in
+                   forall x. (mem_r_interval x a[i]/\x<>e) <->
+                             (mem_r_interval x res[j]\/mem_r_interval x res[j+1]) };
+          (*assert { forall x. ( (gen_mem_sub_union x a 0 (i+1) /\ x<>e) <->
+                   (gen_mem_union x res) ) }*)
+        end
+    done;
+    res

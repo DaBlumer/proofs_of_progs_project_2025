@@ -22,12 +22,18 @@ module BoundInterval
     \/ (i.upper_closed /\ e = i.upper.V.real)
 
   let predicate mem_interval (e : V.t) (i : bound_interval) =
-     V.(orb (i.lower < e < i.upper) (orb
-       (andb i.lower_closed (e = i.lower))
-       (andb i.upper_closed (e = i.upper))))
+     any bool ensures { result <-> V.(
+          (i.lower < e < i.upper)
+       \/ (i.lower_closed /\ e = i.lower)
+       \/ (i.upper_closed /\ e = i.upper)
+     )}(* V.(orb (i.lower < e < i.upper) (orb *)
+      (*  (andb i.lower_closed (e = i.lower)) *)
+      (*  (andb i.upper_closed (e = i.upper)))) *)
 
   predicate incl_r_interval (i j : bound_interval) =
     forall e. mem_r_interval e i -> mem_r_interval e j
+
+  lemma mem_r_charac : forall x i. mem_interval x i -> mem_r_interval x.V.real i
 
   let function incl_interval (i j : bound_interval) : bool
   = any bool ensures {
@@ -124,6 +130,34 @@ module BoundInterval
     let nf, nl = (if i <== j then j else i), (if i ==> j then j else i) in
     {lower=nf.lower; lower_closed=nf.lower_closed;
      upper=nl.upper; upper_closed=nl.upper_closed}
+
+  let predicate mem_interval_inside e i = V.(i.lower < e < i.upper)
+  let predicate mem_interval_border (e : V.t) (i : bound_interval) =
+    any bool ensures {
+      result <-> V.(
+          (e = i.lower /\ i.lower_closed)
+       \/ (e = i.upper /\ i.upper_closed)
+    )}
+    (* V.((e=i.lower&&i.lower_closed) || (e=i.upper&&i.upper_closed)) *)
+
+  let function except_interval_inside (i : bound_interval) (e : V.t)
+    requires { mem_interval_inside e i }
+    ensures { let (j, k) = result in forall x.
+              (mem_r_interval x i /\ x<>e)
+              <->
+              (mem_r_interval x j \/ mem_r_interval x k) }
+  = (
+    {i with upper=e; upper_closed=false},
+    {i with lower=e; lower_closed=false}
+  )
+
+  let function except_interval_border (i : bound_interval) (e : V.t)
+    requires { mem_interval_border e i }
+    requires { V.(i.lower < i.upper) }
+    ensures { forall x. mem_r_interval x result
+                    <-> (mem_r_interval x i /\ x<>e) }
+  = if V.(e = i.lower) then { i with lower_closed=false }
+    else { i with upper_closed=false }
 
   let predicate (<<) i j = before_interval i j
   let function (++) = merge_intervals
@@ -388,5 +422,62 @@ module BoundUnion
       result <- union_union result (inter_interval bu'.a[i] bu)
     done;
     result
-end
 
+  let lemma gen_replace_mem_union (x:real) (a new:array bound_interval) (i j:int)
+    requires { 0 <= i <= j <= length a }
+    ensures { gen_mem_union x (replace a new i j) <->
+              (gen_mem_sub_union x a 0 i \/ gen_mem_sub_union x a j (length a)
+               \/ gen_mem_union x new) }
+  = ()
+
+  let function append (a b: array 'a) = replace a b (length a) (length a)
+  let lemma append_mem (x : real) (a b : array bound_interval)
+    ensures { gen_mem_union x (append a b) <-> gen_mem_union x a \/ gen_mem_union x b }
+  = ()
+
+  let gen_except_union (a : array bound_interval) (e : V.t)
+    ensures { forall x.
+              ((gen_mem_union x a /\ x<>e) <-> gen_mem_union x result) }
+  =
+    let ref res = empty () in
+    for i = 0 to length a - 1 do
+      invariant { forall x. ( (gen_mem_sub_union x a 0 i /\ x<>e) <->
+                              (gen_mem_union x res) ) }
+
+      assert { forall x. ( (gen_mem_sub_union x a 0 (i+1) /\ x<>e) <->
+                               ( (gen_mem_sub_union x a 0 i/\x<>e)
+                                  \/(mem_r_interval x a[i]/\x<>e)) ) };
+
+      if not mem_interval e a[i] then
+        begin
+          res <- (append res (make 1 a[i]));
+          assert { forall x. ((mem_r_interval x a[i] /\ x<>e) ->
+                     (gen_mem_union x res by mem_r_interval x res[length res - 1])) };
+        end
+      else if V.(a[i].lower = a[i].upper) then
+        ()
+      else if mem_interval_border e a[i] then
+        begin
+          let nint = except_interval_border a[i] e in
+           res <- append res (make 1 nint);
+          assert { forall x. mem_r_interval x a[i] /\ x <> e -> gen_mem_union x res
+                             by mem_r_interval x res[length res - 1] };
+        end
+      else if mem_interval_inside e a[i] then
+        begin
+          let int,int' = except_interval_inside a[i] e in
+          res <- append res (make 1 int);
+          res <- append res (make 1 int');
+          assert { let j = length res - 2 in
+                   forall x. (mem_r_interval x a[i]/\x<>e) <->
+                             (mem_r_interval x res[j]\/mem_r_interval x res[j+1]) };
+        end
+    done;
+    res
+
+  let except_union (bu : bound_union) (e : V.t)
+    ensures { forall x. mem_union x bu /\ x<>e <-> mem_union x result }
+  =
+    let a = lax_bound_union_to_array (lax_inj bu) in
+    lax_to_strict (array_to_lax_bound_union (gen_except_union a e))
+end
