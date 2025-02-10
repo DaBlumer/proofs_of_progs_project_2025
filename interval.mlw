@@ -26,9 +26,7 @@ module BoundInterval
           (i.lower < e < i.upper)
        \/ (i.lower_closed /\ e = i.lower)
        \/ (i.upper_closed /\ e = i.upper)
-     )}(* V.(orb (i.lower < e < i.upper) (orb *)
-      (*  (andb i.lower_closed (e = i.lower)) *)
-      (*  (andb i.upper_closed (e = i.upper)))) *)
+     )}
 
   predicate incl_r_interval (i j : bound_interval) =
     forall e. mem_r_interval e i -> mem_r_interval e j
@@ -52,7 +50,7 @@ module BoundInterval
   = any bool ensures {
       result <-> V.(i.upper < j.lower
       \/
-      (i.upper = j.lower /\ not(i.upper_closed /\ j.lower_closed)))
+      (i.upper = j.lower /\ not i.upper_closed /\ not j.lower_closed))
     }
   lemma interval_r_nonempy :
     forall i: bound_interval. exists x. mem_r_interval x i
@@ -92,6 +90,24 @@ module BoundInterval
     )}
   let predicate (<.>) = ends_after_starts
 
+  let predicate r_before_interval (e : real) (i : bound_interval)
+  = any bool ensures { result <-> V.(
+      e <. i.lower.real \/ (e = i.lower.real /\ not i.lower_closed)
+  )}
+  let predicate (.<-) = r_before_interval
+
+  let predicate r_after_interval (e : real) (i : bound_interval)
+  = any bool ensures { result <-> V.(
+      e >. i.upper.real \/ (e = i.upper.real /\ not i.upper_closed)
+  )}
+  let predicate (->.) = r_after_interval
+
+  let lemma r_before_after_mem (x:real) (i:bound_interval)
+    ensures { mem_r_interval x i -> not(x .<- i \/ x ->. i) }
+    ensures { x .<- i -> not(mem_r_interval x i \/ x ->. i) }
+    ensures { x ->. i -> not(x .<- i \/ mem_r_interval x i) }
+  = ()
+
   let function ndisj_interval (i j : bound_interval) : bool
   = any bool ensures {
     result <-> V.(
@@ -101,8 +117,11 @@ module BoundInterval
     )
   }
 
-  lemma ndisj_carac : forall i j :
-     bound_interval. ndisj_interval i j <-> not (disj_r_interval i j)
+  lemma ndisj_carac : forall i j : bound_interval.
+    ndisj_interval i j <-> not (disj_r_interval i j)
+
+  lemma ndisj_carac2 : forall i j: bound_interval.
+    ndisj_interval i j \/ before_interval i j \/ before_interval j i
 
   let function merge_intervals (i j : bound_interval) : bound_interval
     requires { ndisj_interval i j }
@@ -138,7 +157,6 @@ module BoundInterval
           (e = i.lower /\ i.lower_closed)
        \/ (e = i.upper /\ i.upper_closed)
     )}
-    (* V.((e=i.lower&&i.lower_closed) || (e=i.upper&&i.upper_closed)) *)
 
   let function except_interval_inside (i : bound_interval) (e : V.t)
     requires { mem_interval_inside e i }
@@ -480,4 +498,141 @@ module BoundUnion
   =
     let a = lax_bound_union_to_array (lax_inj bu) in
     lax_to_strict (array_to_lax_bound_union (gen_except_union a e))
+
+
+  let lemma inbetween_ordered_intervals (bu : bound_union) (x : real) (i : int)
+    requires { 0 <= i < length bu.a - 1}
+    requires { x ->. bu.a[i] /\ x .<- bu.a[i+1] }
+    ensures { not (mem_union x bu) }
+  =
+    assert { forall j. 0 <= j < i ->
+             x ->. bu.a[j] by (bu.a[j] << bu.a[i] /\ x ->. bu.a[i] ) };
+    assert { forall j. i+1 < j < length bu.a ->
+             x .<- bu.a[j] by (bu.a[i+1] << bu.a[j] /\ x .<- bu.a[i+1]) }
+
+
+  let lemma outside_ordered_intervals (bu : bound_union) (x : real)
+    requires { length bu.a > 0 }
+    requires { x .<- bu.a[0] \/ x ->. bu.a[length bu.a - 1] }
+    ensures { not (mem_union x bu) }
+  = ()
+
+  let lemma not_empty_union (bu:bound_union)
+    requires { length bu.a > 0 }
+    ensures { exists x. mem_union x bu }
+  =
+    assert { exists x. mem_r_interval x bu.a[0] }
+
+  let predicate starts_before_strict (i j : bound_interval)
+  = any bool ensures { result <-> V.(
+      i.lower < j.lower \/
+      (i.lower = j.lower /\ not j.lower_closed /\ i.lower_closed)
+  )}
+  let predicate (<=|) = starts_before_strict
+
+  use real.RealInfix
+
+  let predicate ends_after_strict (i j : bound_interval)
+  = any bool ensures { result <-> V.(
+      j.upper < i.upper \/
+      (i.upper = j.upper /\ not j.upper_closed /\ i.upper_closed)
+  )}
+  let predicate (|=>) = ends_after_strict
+
+  let lemma gap_not_empty (i j : bound_interval)
+    requires { i <=| j}
+    ensures { exists x. mem_r_interval x i /\ x .<- j }
+  =
+    let x = V.(
+      let up = if i.upper < j.lower then i.upper else j.lower in
+      if i.lower < j.lower then (i.lower.real +. up.real)/.2.
+      else i.lower.real
+    ) in assert { mem_r_interval x i}
+
+  let lemma gap_not_empty' (i j : bound_interval)
+    requires { i |=> j}
+    ensures { exists x. mem_r_interval x i /\ x ->. j }
+  =
+    let x = V.(
+      let r = if j.upper < i.lower then i.lower else j.upper in
+      if j.upper < i.upper then (i.upper.real +. r.real)/.2.
+      else i.upper.real
+    ) in assert { mem_r_interval x i}
+
+  let lemma gap_not_empty'' (i j k : bound_interval)
+    requires { j |=> i }
+    requires { i << k }
+    requires { not i << j }
+    ensures { exists x. mem_r_interval x j /\ x .<- k /\ x ->. i }
+  =
+    let x = V.(
+      if i.upper < k.lower && i.upper < j.upper then
+        let r = if k.lower < j.upper then k.lower else j.upper in
+        (i.upper.real +. r.real)/.2.0
+      else if i.upper < k.lower then j.upper.real
+      else if i.upper < j.upper then i.upper.real
+      else j.upper.real
+    ) in assert {mem_r_interval x j /\ x .<- k /\ x ->. i}
+
+
+  let incl_interval_union (int : bound_interval) (bu: bound_union)
+    ensures { result <-> (forall x. (mem_r_interval x int -> mem_union x bu)) }
+  =
+    let ref i = 0 in
+    while i < length bu.a && bu.a[i] << int do
+      variant { length bu.a - i }
+      invariant { 0 <= i <= length bu.a }
+      invariant { forall j. 0 <= j < i -> bu.a[j] << int}
+      i <- i+1
+    done;
+    if i = length bu.a || length bu.a = 0 then
+      begin
+        assert { forall j. 0 <= j < length bu.a -> disj_r_interval bu.a[j] int };
+        assert { forall x. mem_r_interval x int -> not mem_union x bu };
+        assert { not (forall x. (mem_r_interval x int -> mem_union x bu)) };
+        false
+      end
+    else if int << bu.a[i] then
+      begin
+        assert { forall j. 0 <= j < i -> disj_r_interval bu.a[j] int };
+        assert { forall j. i <= j < length bu.a -> (disj_r_interval int bu.a[j] by int << bu.a[j]) };
+        assert { forall x. mem_r_interval x int -> not mem_union x bu };
+        assert { length bu.a > 0 };
+        assert { exists x. mem_union x bu };
+        assert { not (forall x. (mem_r_interval x int -> mem_union x bu)) };
+        false
+      end
+    else begin
+      assert { ndisj_interval bu.a[i] int };
+      if incl_interval int bu.a[i] then
+        begin
+          assert { (forall x. (mem_r_interval x int -> mem_union x bu)) };
+          true
+        end
+      else
+        begin
+          assert {
+            if int <=| bu.a[i] then
+              if i = 0 then
+                (exists x. mem_r_interval x int /\ x .<- bu.a[0])
+              else
+                (exists x. mem_r_interval x int /\ x .<- bu.a[i] /\ x ->. bu.a[i-1])
+            else (int |=> bu.a[i]) /\
+              if i = bu.a.length - 1 then
+                (exists x. mem_r_interval x int /\ x ->. bu.a[i])
+              else if bu.a[i].upper = int.upper then
+                let x = int.upper.V.real in
+                (V.(bu.a[i].upper <= bu.a[Int.(i+1)].lower /\ (bu.a[i].upper = bu.a[Int.(i+1)].lower -> not bu.a[Int.(i+1)].lower_closed)) by bu.a[i]<<bu.a[i+1])
+                /\
+                V.(mem_r_interval x int /\ x .<- bu.a[Int.(i+1)] by bu.a[i]<<bu.a[Int.(i+1)] /\ x ->. bu.a[i])
+              else V.(
+                (exists x. mem_r_interval x int /\ x .<- bu.a[Int.(i+1)] /\ x ->. bu.a[i])
+                by (let r = if bu.a[Int.(i+1)].lower < int.upper then bu.a[Int.(i+1)].lower else int.upper in
+                let x = (bu.a[i].upper.real +. r.real) /. 2.0 in
+                mem_r_interval x int /\ x .<- bu.a[Int.(i+1)] /\ x ->. bu.a[i])
+              )
+          };
+          false
+        end
+    end
 end

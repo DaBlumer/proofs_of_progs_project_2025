@@ -293,3 +293,32 @@ LOG of my assertion debugging
         end
     done;
     res
+
+
+
+  let lemma gap_not_empty'' (i j k : bound_interval)
+    requires { j |=> i }
+    requires { i << k }
+    requires { not i << j }
+    ensures { exists x. mem_r_interval x j /\ x .<- k /\ x ->. i }
+  =
+    let x =
+      if V.((i.upper < k.lower) && i.upper < j.upper) then V.(
+        let r = if k.lower < j.upper then k.lower else j.upper in
+        (i.upper.real +. r.real)/.2.0
+        (*assert {mem_r_interval x j /\ x .<- k /\ x ->. i}*)
+      ) else if V.(i.upper < k.lower) then V.(
+        j.upper.real
+        (*assert {mem_r_interval x j /\ x .<- k /\ x ->. i}*)
+      ) else if V.(i.upper < j.upper) then V.(
+        i.upper.real
+        (*assert {mem_r_interval x j /\ x .<- k /\ x ->. i}*)
+      ) else V.(
+        j.upper.real
+        (*assert { not i.upper_closed by (i << k /\ i.upper = k.lower /\ k.lower <= i.upper)};
+        assert { not k.lower_closed };
+        assert { i.upper = j.upper by j |=> i /\ j.upper <= i.upper };
+        assert {mem_r_interval x j /\ x .<- k /\ x ->. i}*)
+      )
+    in assert {mem_r_interval x j /\ x .<- k /\ x ->. i}
+FIRST WORKING VERSION OF THIS LEMMA
