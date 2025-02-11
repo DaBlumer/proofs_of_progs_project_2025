@@ -51,4 +51,15 @@ module Intf
     val truncate (a:t) : int ensures { result = truncate a.real }
     val floor (a:t) : int ensures { result = floor a.real }
     val ceil (a:t) : int ensures { result = ceil a.real }
+
+    type op = {
+      ghost ur: real -> real;
+      uq: t -> t;
+    }
+    invariant { forall v. ur (real v) = real (uq v) }
+    by { ur = (fun x -> x); uq = (fun q -> q);  }
+
+    predicate si (f : op) = forall r r'. r <. r' -> (f.ur r) <. (f.ur r')
+
+    predicate sd (f : op) = forall r r'. r <. r' -> (f.ur r) >. (f.ur r')
 end

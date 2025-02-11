@@ -1,1 +1,6 @@
-{ "profile": [], "proofs": { "Intf": {} } }
+{
+  "profile": [ { "prover": "alt-ergo@2.6.0", "size": 16, "time": 0.269 } ],
+  "proofs": {
+    "Intf": { "op": { "prover": "alt-ergo@2.6.0", "time": 0.032 } }
+  }
+}

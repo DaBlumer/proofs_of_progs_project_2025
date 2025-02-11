@@ -739,4 +739,50 @@ module BoundUnion
   =
      let bu'' = inter_union bu bu' in
      bound_union_weak_eq bu'' (empty_union())
+
+   let function op_si_interval (op : V.op) (int : bound_interval) : bound_interval
+     requires { V.si op }
+     ensures { forall x. mem_r_interval x int
+                     <-> mem_r_interval (op.V.ur x) result }
+     ensures { result.lower=op.V.uq int.lower }
+     ensures { result.upper=op.V.uq int.upper }
+     ensures { result.lower_closed=int.lower_closed }
+     ensures { result.upper_closed=int.upper_closed }
+   =
+     { int with lower=op.V.uq int.lower; upper=op.V.uq int.upper }
+
+   lemma op_si_interval_order : forall op i j.
+     V.si op -> (i << j <-> op_si_interval op i << op_si_interval op j)
+
+   let function op_sd_interval (op : V.op) (int : bound_interval) : bound_interval
+     requires { V.sd op }
+     ensures { forall x. mem_r_interval x int
+                     <-> mem_r_interval (op.V.ur x) result }
+     ensures { result.lower=op.V.uq int.upper }
+     ensures { result.upper=op.V.uq int.lower }
+     ensures { result.lower_closed=int.upper_closed }
+     ensures { result.upper_closed=int.lower_closed }
+   =
+     { lower=op.V.uq int.upper; upper=op.V.uq int.lower;
+       lower_closed=int.upper_closed; upper_closed=int.lower_closed }
+
+   lemma op_sd_interval_order : forall op i j.
+     V.sd op -> (i << j <-> op_sd_interval op j << op_sd_interval op i)
+
+   let op_si_union (op : V.op) (bu : bound_union) : bound_union
+     requires { V.si op }
+     ensures { forall x. mem_union x bu <-> mem_union (op.V.ur x) result }
+     (* ensures { forall x. mem_union x result <-> *)
+     (*                     (exists y. mem_union y bu /\ x = op.V.ur x) } *)
+   = { a = map bu.a (op_si_interval op) }
+
+  lemma op_sd_union_aux : forall a x.
+    gen_mem_union x a <-> gen_mem_union x (rev a)
+
+  let op_sd_union (op : V.op) (bu : bound_union) : bound_union
+    requires { V.sd op }
+    ensures { forall x. mem_union x bu <-> mem_union (op.V.ur x) result }
+  =
+    let res = map bu.a (op_sd_interval op) in
+    { a = rev res }
 end
