@@ -52,6 +52,14 @@ module BoundInterval
       \/
       (i.upper = j.lower /\ not i.upper_closed /\ not j.lower_closed))
     }
+
+  let predicate lax_before_interval (i j : bound_interval)
+  = any bool ensures {
+      result <-> V.(i.upper < j.lower
+      \/
+      (i.upper = j.lower /\ not (i.upper_closed /\ j.lower_closed)))
+    }
+
   lemma interval_r_nonempy :
     forall i: bound_interval. exists x. mem_r_interval x i
 
@@ -62,7 +70,7 @@ module BoundInterval
       incl_interval i j
 
   lemma before_disj_r_interval : forall i j : bound_interval.
-    (before_interval i j \/ before_interval j i) <-> disj_r_interval i j
+    (lax_before_interval i j \/ lax_before_interval j i) <-> disj_r_interval i j
 
   let predicate strt_before_interval (i j : bound_interval) : bool
   = any bool ensures {
@@ -82,13 +90,13 @@ module BoundInterval
     )}
   let predicate (==>) = end_after_interval
 
-  let predicate ends_after_starts (i j : bound_interval)
+  let predicate nends_before_starts (i j : bound_interval)
   = any bool ensures {
-      result <-> V.(
+      result <-> V.( let (i, j) = if i<==j then (i,j) else (j,i) in
         j.lower < i.upper ||
-        (i.upper = j.lower && (i.upper_closed && j.lower_closed))
+        (i.upper = j.lower && (i.upper_closed || j.lower_closed))
     )}
-  let predicate (<.>) = ends_after_starts
+  let predicate (<.>) = nends_before_starts
 
   let predicate r_before_interval (e : real) (i : bound_interval)
   = any bool ensures { result <-> V.(
@@ -121,10 +129,12 @@ module BoundInterval
     ndisj_interval i j <-> not (disj_r_interval i j)
 
   lemma ndisj_carac2 : forall i j: bound_interval.
-    ndisj_interval i j \/ before_interval i j \/ before_interval j i
+    ndisj_interval i j \/ lax_before_interval i j \/ lax_before_interval j i
+
+  lemma nends_comm : forall i j. i <.> j <-> j <.> i
 
   let function merge_intervals (i j : bound_interval) : bound_interval
-    requires { ndisj_interval i j }
+    requires { i <.> j }
     ensures { forall x. mem_r_interval x result <->
                         mem_r_interval x i \/ mem_r_interval x j }
     ensures { let k = if i <== j then i else j in
@@ -178,6 +188,7 @@ module BoundInterval
     else { i with upper_closed=false }
 
   let predicate (<<) i j = before_interval i j
+  let predicate (<<') i j = lax_before_interval i j
   let function (++) = merge_intervals
   let function (^^) = inter_intervals
 
@@ -197,15 +208,27 @@ module BoundInterval
               by incl_r_interval(i^^j)(j^^i)/\incl_r_interval(i^^j)(j^^i) } = ()
 
   let lemma merge_union_comp_order (i j k: bound_interval)
-    requires { ndisj_interval i j }
-    ensures { (k << i /\ k << j) -> k << (i++j) /\ k << (i^^j) }
-    ensures { (i << k /\ j << k) -> (i++j) << k /\ (i^^j) << k}
+    requires { i <.> j }
+    ensures { (k << i /\ k << j) -> k << (i++j) (*/\ k << (i^^j)*) }
+    ensures { (i << k /\ j << k) -> (i++j) << k (*/\ (i^^j) << k*)}
   = ()
 
-let lemma merge_union_comp_order' (i j k: bound_interval)
+  let lemma merge_union_comp_order' (i j k: bound_interval)
+    requires { i <.> j }
+    ensures { (k <== i /\ k <== j) -> k <== (i++j) (*/\ k <== (i^^j)*) }
+    ensures { (i <== k /\ j <== k) -> (i++j) <== k (*/\ (i^^j) <== k*)}
+  = ()
+
+  let lemma fuse_union_comp_order (i j k : bound_interval)
     requires { ndisj_interval i j }
-    ensures { (k <== i /\ k <== j) -> k <== (i++j) /\ k <== (i^^j) }
-    ensures { (i <== k /\ j <== k) -> (i++j) <== k /\ (i^^j) <== k}
+    ensures { (k << i /\ k << j) -> k << (i^^j) }
+    ensures { (i << k /\ j << k) -> (i^^j) << k }
+  = ()
+
+  let lemma fuse_union_comp_order' (i j k : bound_interval)
+    requires { ndisj_interval i j }
+    ensures { (k <== i /\ k <== j) -> k <== (i^^j) }
+    ensures { (i <== k /\ j <== k) -> (i^^j) <== k }
   = ()
 
   let function __mk_interval lb l ub u
@@ -328,7 +351,7 @@ module BoundUnion
     { lax_a = na }
 
   let lemma relating_orders (i j : bound_interval)
-    ensures {(i<==j /\ not (i<.>j)) -> i << j} = ()
+    ensures {(i<==j /\ not (i<.>j)) <-> i << j} = ()
 
   let lax_to_strict (lbu : lax_bound_union) : bound_union
     ensures { forall x. mem_union x result <-> lax_mem_union x lbu }
@@ -350,6 +373,7 @@ module BoundUnion
         assert { tmp.lax_a[i] <== tmp.lax_a[i+1] };
         assert { i-1 >= 0 -> tmp.lax_a[i-1] << tmp.lax_a[i] };
         assert { i-1 >= 0 -> tmp.lax_a[i-1] << tmp.lax_a[i+1] };
+        assert { i-1 >= 0 -> tmp.lax_a[i-1] << tmp.lax_a[i]++tmp.lax_a[i+1] };
         tmp <- lax_merge tmp i;
         assert { i-1 >= 0 -> tmp.lax_a[i-1] << tmp.lax_a[i] };
         end
