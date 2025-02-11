@@ -129,9 +129,6 @@ module BoundInterval
     )
   }
 
-  lemma ndisj_carac : forall i j : bound_interval.
-    ndisj_interval i j <-> not (disj_r_interval i j)
-
   lemma ndisj_carac2 : forall i j: bound_interval.
     ndisj_interval i j \/ lax_before_interval i j \/ lax_before_interval j i
 
@@ -568,10 +565,6 @@ module BoundUnion
     ensures { not (mem_union x bu) }
   = ()
 
-  let lemma aux_tmp (i j k : bound_interval)
-    requires { i << j << k }
-    ensures { exists x. mem_r_interval x j /\ x .<- k /\ x ->. i }
-  = ()
 
   let lemma not_empty_union (bu:bound_union)
     requires { length bu.a > 0 }
