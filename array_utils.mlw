@@ -39,6 +39,13 @@ let replace_by_one (a : array 'a) (e : 'a) (i j : int): array 'a
                         result[k] = a[k - 1 + j - i] }
   = replace a (make 1 e) i j
 
+let predicate weak_array_eq (a b : array 'a) = any bool
+  ensures {
+    result <->
+        length a = length b
+     /\ forall i. 0<= i < length a -> a[i]=b[i]
+  }
+
 end
 
 module ArraySort
