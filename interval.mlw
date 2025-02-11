@@ -16,6 +16,10 @@ module BoundInterval
       (V.(<) lower upper \/ (lower_closed /\ upper_closed))
   } by { lower=V.non_empty; upper=V.non_empty; lower_closed=true; upper_closed=true }
 
+  function diam_interval (i : bound_interval) : real
+  = V.(i.upper - i.lower).V.real
+  lemma diam_interval_pos : forall i. diam_interval i >=. 0.0
+
   predicate mem_r_interval (e : real) (i : bound_interval) =
        i.lower.V.real <. e <. i.upper.V.real
     \/ (i.lower_closed /\ e = i.lower.V.real)
@@ -131,12 +135,17 @@ module BoundInterval
   lemma ndisj_carac2 : forall i j: bound_interval.
     ndisj_interval i j \/ lax_before_interval i j \/ lax_before_interval j i
 
-  lemma nends_comm : forall i j. i <.> j <-> j <.> i
+  let lemma nends_comm (i j : bound_interval)
+    requires {i <.> j}
+    ensures {j <.> i}
+  = let (i, j) = if i<==j then (i,j) else (j,i) in
+       V.(assert { j.lower < i.upper \/
+        (i.upper = j.lower /\ (i.upper_closed \/ j.lower_closed)) })
 
   let function merge_intervals (i j : bound_interval) : bound_interval
     requires { i <.> j }
     ensures { forall x. mem_r_interval x result <->
-                        mem_r_interval x i \/ mem_r_interval x j }
+                        (mem_r_interval x i \/ mem_r_interval x j) }
     ensures { let k = if i <== j then i else j in
               result.lower = k.lower /\ result.lower_closed = k.lower_closed }
     ensures { let k = if i ==> j then i else j in
@@ -198,9 +207,9 @@ module BoundInterval
     i = j by bound_interval'eq i j
 
   let lemma merge_intervals_comm (i j : bound_interval) : unit
-    requires { ndisj_interval i j }
+    requires { i <.> j }
     ensures { i++j=j++i
-              by incl_r_interval(i++j)(j++i)/\incl_r_interval(j++i)(i++j) } = ()
+              by (incl_interval (i++j)(j++i)/\incl_r_interval(j++i)(i++j)) } = ()
 
   let lemma inter_intervals_comm (i j : bound_interval) : unit
     requires { ndisj_interval i j }
@@ -277,6 +286,7 @@ module BoundUnion
   use array.Array
   use array_utils.ArrayUtils
   use exn.Exn
+  use real.RealInfix
 
   type bound_union = {
      a : array bound_interval
@@ -325,6 +335,17 @@ module BoundUnion
   lemma mem_union_unique :
     forall x. forall bu. forall i. 0 <= i < bu.a.length -> mem_r_interval x bu.a[i] ->
       forall j. 0 <= j < i \/ i < j < bu.a.length -> not mem_r_interval x bu.a[j]
+
+  let function union_sup (bu : bound_union) : V.t
+    requires { length bu.a > 0 }
+  = bu.a[length bu.a -1].upper
+
+  let function union_inf (bu : bound_union) : V.t
+    requires { length bu.a > 0 }
+  = bu.a[0].lower
+
+  lemma union_sup_inf_are_bounds :
+    forall bu x. mem_union x bu -> (union_inf bu <=. x <=. union_sup bu)
 
   let function lax_inj (bu : bound_union) : lax_bound_union
     ensures {forall x. mem_union x bu <-> lax_mem_union x result}
@@ -657,8 +678,9 @@ module BoundUnion
 
   let function incl_union (bu bu' : bound_union)
     ensures { result <-> forall x. (mem_union x bu -> mem_union x bu') }
-    ensures { result <-> forall i. 0 <= i < length bu.a ->
-                     (exists j. 0 <= j < length bu'.a /\ incl_interval bu.a[i] bu'.a[j]) }
+    ensures { result <-> (forall i. 0 <= i < length bu.a ->
+                     (exists j. 0 <= j < length bu'.a /\ incl_interval bu.a[i] bu'.a[j])
+                     by incl_interval_union bu.a[i] bu' )}
   =
     let ref i = 0 in
     while i < length bu.a && incl_interval_union bu.a[i] bu' do
@@ -714,7 +736,7 @@ module BoundUnion
           assert {bu'.a[k] = bu.a[i] = bu'.a[k-1]};
           assert { bu'.a[k-1] << bu'.a[k] };
         end else if j > i then begin
-          assert { bu'.a[k] = bu.a[i] << bu.a[j] = bu'.a[k-1] << bu.a[k] };
+          assert { bu'.a[k] = bu.a[i] << bu.a[j] = bu'.a[k-1] (*<< bu.a[k]*) };
         end
       end
     done
@@ -733,6 +755,11 @@ module BoundUnion
   let function empty_union()
     ensures { forall x. not mem_union x result }
   = {a=empty()}
+
+  let function singleton_union (q : V.t) : bound_union
+    ensures { forall x. mem_union x result <-> x = q.V.real }
+    ensures { union_sup result = q = union_inf result }
+  = { a = make 1 (singleton_mk q) }
 
   let disjoint_unions (bu bu': bound_union)
     ensures { result <-> forall x. not(mem_union x bu' /\ mem_union x bu) }
@@ -831,7 +858,7 @@ module BoundUnion
 
   let op_nsi_union (op : V.op) (bu : bound_union) : bound_union
     requires { V.nsi op }
-    ensures { forall x. mem_union x bu <-> mem_union (op.V.ur x) result }
+    ensures { forall x. mem_union x bu -> mem_union (op.V.ur x) result }
    = lax_to_strict { lax_a = (map bu.a (op_nsi_interval op)) }
 
   use real.Truncate  use real.FromInt
