@@ -415,3 +415,22 @@ FIRST WORKING VERSION OF THIS LEMMA
     /\ (mem_union x bu' -> not mem_union x bu) }
   = ((inter_union bu bu').a.length = 0)
 end
+
+
+
+    (* (\*     lower_closed=true; upper_closed=true }
+    (* if V.(op.uq int.lower = op.uq int.upper) then let q = op.V.uq int.lower in *)
+    (*   begin *)
+    (*   (\*assert { forall x. mem_r_interval x.V.real int -> op.V.uq x = q *)
+    (*                     by V.(op.uq int.lower <= op.uq x <= op.uq int.upper)};*\) *)
+    (*   { lower=q; upper=q; lower_closed=true; upper_closed=true } *)
+    (*   end *)
+    (* else *)
+    (*   begin *)
+    (*   assert { V.(op.uq int.lower < op.uq int.upper) }; *)
+    (*   assert { V.(int.lower < int.upper) }; *)
+    (*   (* { lower=op.V.uq int.lower; upper=op.V.uq int.upper; *\) *)
+    (* (\*     lower_closed=true; upper_closed=true } *) *)
+    (*   end *)*)
+OP_SD_INTERVAL
+

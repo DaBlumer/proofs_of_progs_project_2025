@@ -39,6 +39,7 @@ module Intf
     val function (+) (a:t) (b:t) : t ensures { a.real +. b.real = result.real }
     val function (-) (a:t) (b:t) : t ensures { a.real -. b.real = result.real }
     val function (*) (a:t) (b:t) : t ensures { a.real *. b.real = result.real }
+    val function neg (a:t) : t ensures { result.real = 0.0 -. (a.real) }
 
     val function (/) (a:t) (b:t) : t
         requires { b.real <> 0.0 }
@@ -62,4 +63,8 @@ module Intf
     predicate si (f : op) = forall r r'. r <. r' -> (f.ur r) <. (f.ur r')
 
     predicate sd (f : op) = forall r r'. r <. r' -> (f.ur r) >. (f.ur r')
+
+    predicate nsi (f : op) = forall r r'. r <=. r' -> (f.ur r) <=. (f.ur r')
+
+    predicate nsd (f : op) = forall r r'. r <=. r' -> (f.ur r) >=. (f.ur r')
 end

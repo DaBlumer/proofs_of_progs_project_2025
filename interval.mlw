@@ -785,4 +785,72 @@ module BoundUnion
   =
     let res = map bu.a (op_sd_interval op) in
     { a = rev res }
+
+
+  let cube_union (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x bu <-> mem_union (x*.x*.x) result }
+  =
+    let op = { V.ur=(fun x -> x*.x*.x); V.uq=(fun q -> V.(q*q*q))} in
+    op_si_union op bu
+
+  (* TODO : talk about val neg in report *)
+  let neg_union (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x bu <-> mem_union (0.0 -. x) result }
+  =
+    let op = { V.ur=(fun x -> 0.0 -. x); V.uq=(fun q -> V.neg q)} in
+    op_sd_union op bu
+
+  let function op_nsi_interval (op : V.op) (int : bound_interval) : bound_interval
+    requires { V.nsi op }
+    ensures { forall x. mem_r_interval x int
+                      -> mem_r_interval (op.V.ur x) result }
+    ensures { result.lower=op.V.uq int.lower }
+    ensures { result.upper=op.V.uq int.upper }
+    ensures { result.lower_closed=true }
+    ensures { result.upper_closed=true }
+  =
+    { lower=op.V.uq int.lower; upper=op.V.uq int.upper;
+      lower_closed=true; upper_closed=true }
+
+  lemma op_nsi_interval_order : forall op i j.
+    V.nsi op -> (i << j -> let f = op_nsi_interval op in f i <== f j /\ f j ==> f i)
+
+  let op_nsi_union (op : V.op) (bu : bound_union) : bound_union
+    requires { V.nsi op }
+    ensures { forall x. mem_union x bu <-> mem_union (op.V.ur x) result }
+   = lax_to_strict { lax_a = (map bu.a (op_nsi_interval op)) }
+
+  use real.Truncate  use real.FromInt
+
+  let ceil_union (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x bu -> mem_union (from_int (ceil x)) result }
+  =
+    let op = { V.ur=(fun x -> from_int (ceil x)); V.uq=(fun q -> V.(of_int (ceil q))) } in
+    assert { forall x x'. x<=.x' -> from_int (ceil x) <=. from_int (ceil x') };
+    op_nsi_union op bu
+
+  let floor_union (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x bu -> mem_union (from_int (floor x)) result }
+  =
+    let op = { V.ur=(fun x -> from_int (floor x)); V.uq=(fun q -> V.(of_int (floor q))) } in
+    assert { forall x x'. x<=.x' -> from_int (floor x) <=. from_int (floor x') };
+    op_nsi_union op bu
+
+  let truncate_union (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x bu -> mem_union (from_int (truncate x)) result }
+  =
+    let op = { V.ur=(fun x -> from_int (truncate x)); V.uq=(fun q -> V.(of_int (truncate q))) } in
+    assert { forall x x'. x<=.x' -> from_int (truncate x) <=. from_int (truncate x') };
+    op_nsi_union op bu
+
+  function relu (x:real) : real = if x >=. 0.0 then x else 0.0
+  let relu_union (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x bu -> mem_union (relu x) result }
+  =
+    let op = { V.ur=relu;
+               V.uq=(fun q -> V.(if (q-q) <= q then q else (q-q))) }
+    in
+    assert { forall x x'. x<=.x' ->  relu x <=. relu x' };
+    op_nsi_union op bu
+
 end
