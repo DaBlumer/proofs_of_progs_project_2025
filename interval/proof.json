@@ -630,6 +630,18 @@
         ]
       },
       "mem_union_unique": { "prover": "z3@4.8.12", "time": 0.109 },
+      "mul_cst_union": {
+        "tactic": "split_vc",
+        "children": [
+          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "z3@4.8.12", "time": 0.077 },
+          { "prover": "z3@4.8.12", "time": 0.093 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.164 }
+        ]
+      },
       "neg_union": { "prover": "alt-ergo@2.6.0", "time": 0.041 },
       "not_empty_union": {
         "tactic": "split_vc",

@@ -800,6 +800,20 @@ module BoundUnion
     let op = { V.ur=(fun x -> 0.0 -. x); V.uq=(fun q -> V.neg q)} in
     op_sd_union op bu
 
+  let mul_cst_union (c : V.t) (bu : bound_union) : bound_union
+    ensures { forall x. mem_union x bu -> mem_union (x *. c) result }
+  =
+    let op = { V.ur=( *.) c.V.real; V.uq=V.((*) c) } in
+    if V.(c < c-c) then
+      begin
+        assert { c.V.real <. 0.0 }; (* just a hint for efficiency *)
+        op_sd_union op bu
+      end
+    else if V.(c-c < c) then
+      op_si_union op bu
+    else (* c = 0 *)
+      { a = make 1 (singleton_mk c) }
+
   let function op_nsi_interval (op : V.op) (int : bound_interval) : bound_interval
     requires { V.nsi op }
     ensures { forall x. mem_r_interval x int
