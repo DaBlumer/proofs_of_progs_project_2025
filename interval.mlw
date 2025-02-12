@@ -256,6 +256,11 @@ module BoundInterval
     ensures { forall x. mem_r_interval x result -> a.V.real <. x <=. b.V.real }
   = __mk_interval false a true b
 
+  let function opn_opn_mk a b
+    requires { V.(a < b) }
+    ensures { forall x. mem_r_interval x result -> a.V.real <. x <. b.V.real }
+  = __mk_interval false a false b
+
   let function singleton_mk a
     ensures { forall x. mem_r_interval x result <-> x = a.V.real }
   = clo_clo_mk a a
@@ -436,6 +441,10 @@ module BoundUnion
                     <-> mem_union x bu \/ mem_union x bu' }
   =
     lax_to_strict (lax_union_union (lax_inj bu) (lax_inj bu'))
+
+  let function mk_1_union (i : bound_interval)
+    ensures { forall x. mem_union x result <-> mem_r_interval x i }
+  = { a = make 1 i }
 
   let array_to_lax_bound_union (a : array bound_interval) : lax_bound_union
     ensures { forall x. gen_mem_union x a <-> lax_mem_union x result }
@@ -789,9 +798,11 @@ module BoundUnion
    lemma op_sd_interval_order : forall op i j.
      V.sd op -> (i << j <-> op_sd_interval op j << op_sd_interval op i)
 
-   let op_si_union (op : V.op) (bu : bound_union) : bound_union
+   let function op_si_union (op : V.op) (bu : bound_union) : bound_union
      requires { V.si op }
      ensures { forall x. mem_union x bu <-> mem_union (op.V.ur x) result }
+     ensures { length bu.a > 0 -> V.(union_inf result = op.V.uq (union_inf bu)) }
+     ensures { length bu.a > 0 -> V.(union_sup result = op.V.uq (union_sup bu)) }
      (* ensures { forall x. mem_union x result <-> *)
      (*                     (exists y. mem_union y bu /\ x = op.V.ur x) } *)
    = { a = map bu.a (op_si_interval op) }
@@ -886,5 +897,8 @@ module BoundUnion
     in
     assert { forall x x'. x<=.x' ->  relu x <=. relu x' };
     op_nsi_union op bu
+
+  lemma help : forall x bu. (x <. (union_inf bu).V.real) -> not mem_union x bu
+  lemma help' : forall x bu. (x >. (union_sup bu).V.real) -> not mem_union x bu
 
 end

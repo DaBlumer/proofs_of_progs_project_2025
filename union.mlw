@@ -3,31 +3,35 @@ module Skel
   use bool.Bool
   use real.RealInfix
   use option.Option
+  use array_utils.ArrayUtils
 
   (*clone field.Intf as V with axiom equal_is_eq*)
   use interval.BoundInterval
+  use interval.BoundUnion
   scope Make
   use array.Array
+
+  let predicate bound_unbound_disj_down (udown : option V.t) (bu : bound_union)
+  = any bool ensures { result <-> (
+     bu.a.length > 0 ->
+       match udown with | None -> true | Some x -> V.(x <= union_inf bu) end) }
+
+  let predicate bound_unbound_disj_up (uup : option V.t) (bu : bound_union)
+  = any bool ensures { result <-> (
+     bu.a.length > 0 ->
+       match uup with | None -> true | Some x -> V.(union_sup bu <= x) end) }
+
+  let predicate bound_unbound_disj (udown uup : option V.t) (bu : bound_union)
+  = any bool ensures { result <->
+     bound_unbound_disj_down udown bu /\ bound_unbound_disj_up uup bu
+  }
+
   type u = {
     unbound_down : option V.t;
     unbound_up : option V.t;
-    bound : array bound_interval
-  } invariant {
-    (forall j. 0 <= j < bound.length - 1 -> before_interval bound[j] bound[j+1])
-    /\
-    bound.length > 0 ->
-      match unbound_down with
-      | None -> true
-      | Some x -> V.(x <= bound[0].lower)
-      end
-      /\
-      match unbound_up with
-      | None -> true
-      | Some x ->
-          let lst = bound[bound.length - 1] in
-          V.(lst.upper <= x)
-      end
-  }
+    bu : bound_union
+  } invariant { bound_unbound_disj unbound_down unbound_up bu }
+
   (* just some unsound placeholders *)
   predicate _fmla
   val _code () : u
@@ -37,25 +41,123 @@ module Skel
 
   let x : real = 1.0
 
-  predicate mem (x:real) (l:u) =
-    match l.unbound_down with
-    | None -> false
-    | Some y -> x <. y.V.real
-    end
-    \/
-    match l.unbound_up with
-    | None -> false
-    | Some y -> x >. y.V.real
-    end
-    \/
-    exists i. 0 <= i < l.bound.length /\ mem_r_interval x l.bound[i]
+  predicate mem_unbound_down (x:real) (l : option V.t)
+  = match l with None -> false | Some y -> x <. y.V.real end
 
-  let signleton (q:V.t) : u
+  predicate mem_unbound_up (x:real) (r : option V.t)
+  = match r with None -> false | Some y -> x >. y.V.real end
+
+  predicate untyped_mem (x : real) (unbound_down unbound_up : option V.t)
+                                   (bu : bound_union)
+  =
+       mem_unbound_down x unbound_down
+    \/ mem_unbound_up x unbound_up
+    \/ mem_union x bu
+
+
+  predicate mem (x:real) (l:u)
+  = untyped_mem x l.unbound_down l.unbound_up l.bu
+
+
+  let predicate gobbles_up (uup : option V.t) (bu : bound_union) =
+    any bool ensures { result <-> length bu.a > 0 /\
+          let i = length bu.a - 1 in
+          match uup with None->false | Some l -> l.V.real .<- bu.a[i] end }
+
+  let predicate gobbles_down (udn : option V.t) (bu : bound_union) =
+      any bool ensures { result <-> length bu.a > 0 /\
+          match udn with None -> false | Some l -> l.V.real ->. bu.a[0] end }
+
+  let lemma tmp_aux (bu : bound_union) (udn : option V.t)
+    requires { gobbles_down udn bu }
+    ensures { forall x. (mem_union x bu \/ mem_unbound_down x udn)
+                    <-> (gen_mem_sub_union x bu.a 1 (length bu.a)
+                         \/ mem_unbound_down x udn) }
+    =
+      ()
+
+  let lemma tmp_aux' (bu : bound_union) (udn : option V.t)
+    requires { gobbles_up udn bu }
+    ensures { forall x. (mem_union x bu \/ mem_unbound_up x udn)
+                    <-> (gen_mem_sub_union x bu.a 0 (length bu.a - 1)
+                         \/ mem_unbound_up x udn) }
+    =
+      ()
+
+  let function fix_untyped (unbound_down unbound_up : option V.t) (bu : bound_union)
+    ensures { forall x. mem x result <->
+                        untyped_mem x unbound_down unbound_up bu }
+  =
+    let ref var_bu = {a = Array.copy bu.a} in
+    while gobbles_up unbound_up var_bu do
+      variant { length var_bu.a }
+      invariant { forall i. 0 <= i < length var_bu.a - 1 ->
+                            var_bu.a[i]<<var_bu.a[i+1] }
+      invariant { forall x. untyped_mem x unbound_down unbound_up var_bu
+                        <-> untyped_mem x unbound_down unbound_up bu }
+      let i = length var_bu.a - 1 in
+      let new_a = replace var_bu.a (empty()) i (i+1) in
+      var_bu <- {a = new_a}
+    done;
+    if not bound_unbound_disj_up unbound_up var_bu then
+      match unbound_up with None -> absurd | Some r ->
+        let i = length var_bu.a - 1 in
+        (*assert { V.(var_bu.a[i].lower <= r) };*)
+        let new_lst = {var_bu.a[i] with upper_closed=true; upper=r} in
+        label L in
+        assert { forall x. (mem_r_interval x var_bu.a[i] \/ mem_unbound_up x unbound_up)
+                      <-> (mem_r_interval x new_lst \/ mem_unbound_up x unbound_up) };
+        assert { forall x. (mem_union x var_bu \/ mem_unbound_up x unbound_up)
+                 <-> (
+                    gen_mem_sub_union x var_bu.a 0 (length var_bu.a - 1)
+                    \/ mem_unbound_up x unbound_up
+                    \/ mem_r_interval x new_lst
+                 ) };
+        var_bu.a[i] <- new_lst;
+        assert { forall x. (mem_union x (var_bu at L) \/ mem_unbound_up x unbound_up)
+                           <->(mem_union x (var_bu ) \/ mem_unbound_up x unbound_up) };
+      end;
+
+    while gobbles_down unbound_down var_bu do
+      variant { length var_bu.a }
+      invariant { forall i. 0 <= i < length var_bu.a - 1 ->
+                            var_bu.a[i]<<var_bu.a[i+1] }
+      invariant { forall x. untyped_mem x unbound_down unbound_up var_bu
+                        <-> untyped_mem x unbound_down unbound_up bu }
+      invariant { bound_unbound_disj_up unbound_up var_bu }
+      let new_a = replace var_bu.a (empty()) 0 1 in
+      var_bu <- {a = new_a}
+    done;
+    if not bound_unbound_disj_down unbound_down var_bu then
+      match unbound_down with None -> absurd | Some l ->
+        (*assert { bound_unbound_disj_down unbound_down var_bu };*)
+        assert { bound_unbound_disj_up unbound_up var_bu };
+        label L2 in
+        let new_lst = {var_bu.a[0] with lower_closed=true; lower=l} in
+        assert { forall x. (mem_r_interval x var_bu.a[0] \/ mem_unbound_down x unbound_down)
+                      <-> (mem_r_interval x new_lst \/ mem_unbound_down x unbound_down) };
+        assert { forall x. (mem_union x var_bu \/ mem_unbound_down x unbound_down)
+                 <-> (
+                    gen_mem_sub_union x var_bu.a 1 (length var_bu.a)
+                    \/ mem_unbound_down x unbound_down
+                    \/ mem_r_interval x new_lst
+                 ) };
+        var_bu.a[0] <- new_lst;
+         assert { forall x. (mem_union x (var_bu at L2) \/ mem_unbound_down x unbound_down)
+                   <->(mem_union x (var_bu ) \/ mem_unbound_down x unbound_down) };
+      end;
+    {bu=var_bu; unbound_up=unbound_up; unbound_down=unbound_down}
+
+  let function empty_u () : u
+    ensures { forall x. not mem x result }
+  = {unbound_down=None; unbound_up=None; bu=empty_union()}
+
+  let function singleton (q:V.t) : u
     ensures { forall x. mem x result <-> q.V.real = x }
   =
     let r = {
       unbound_down = None; unbound_up = None;
-      bound = Array.make 1 (singleton_mk q)
+      bu = {a=Array.make 1 (singleton_mk q)}
     } in
     begin (* these hints are not necessary but make AltErgo faster for this specif *)
       assert { forall x. (mem x r <-> mem_r_interval x (singleton_mk q))};
@@ -63,28 +165,342 @@ module Skel
       r
     end
 
-  let gt (q:V.t) : u
+  let function gt (q:V.t) : u
     ensures { forall x. mem x result <-> x >. q.V.real }
   =
-    {unbound_down = None; bound = Array.empty ();
-     unbound_up = Some q}
+    {unbound_down = None; bu = empty_union(); unbound_up = Some q}
 
   let ge (q:V.t) : u
-    ensures { _fmla } = _code ()
+    ensures { forall x. mem x result <-> x >=. q.V.real }
+  =
+    {unbound_down=None;  bu = singleton_union q; unbound_up = Some q}
 
-  let except (x:V.t) : u
-    ensures { _fmla } = _code ()
+  let function lt (q:V.t) : u
+    ensures { forall x. mem x result <-> x <. q.V.real }
+  =
+    {unbound_down = Some q; bu = empty_union(); unbound_up = None}
+
+  let le (q:V.t) : u
+    ensures { forall x. mem x result <-> x <=. q.V.real }
+  = { unbound_down = Some q; bu = singleton_union q; unbound_up = None }
+
+  let union_with_bound (u : u) (b : bound_union)
+    ensures { forall x. mem x result <-> mem x u \/ mem_union x b }
+  =
+    fix_untyped u.unbound_down u.unbound_up (union_union u.bu b)
+
+  let function union_with_upper (u : u) (up : option V.t)
+    ensures { forall x. mem x result <-> mem x u \/ mem_unbound_up x up }
+  =
+    let up = match u.unbound_up, up with
+      | (None, None) -> None
+      | (None, Some r) -> Some r
+      | (Some r, None) -> Some r
+      | (Some r, Some r') -> Some (if V.(r <= r') then r else r')
+    end in
+    fix_untyped u.unbound_down up u.bu
+
+  let function union_with_lower (u : u) (down : option V.t)
+    ensures { forall x. mem x result <-> mem x u \/ mem_unbound_down x down }
+  =
+    let down = match u.unbound_down, down with
+      | (None, None) -> None
+      | (None, Some r) -> Some r
+      | (Some r, None) -> Some r
+      | (Some r, Some r') -> Some (if V.(r <= r') then r' else r)
+    end in
+    fix_untyped down u.unbound_up u.bu
+
+  let function union (u:u) (v:u) : u
+    ensures { forall x. mem x result <-> mem x u \/ mem x v }
+  =
+    union_with_lower
+      (union_with_upper (union_with_bound u v.bu) v.unbound_up)
+      v.unbound_down
+
+  let inter_up_up  (up up': option V.t)
+    ensures { forall x. mem x result <-> mem_unbound_up x up /\ mem_unbound_up x up' }
+  = match up, up' with
+    | (Some r, Some r') -> gt V.(if r <= r' then r' else r)
+    | (_,_) -> empty_u ()
+    end
+
+  let inter_down_down (dn dn': option V.t)
+    ensures { forall x. mem x result <-> mem_unbound_down x dn /\ mem_unbound_down x dn' }
+  = match dn, dn' with
+    | (Some l, Some l') -> lt V.(if l <= l' then l else l')
+    | (_,_) -> empty_u ()
+    end
+
+  let inter_down_up (dn up : option V.t)
+    ensures { forall x. mem x result <-> mem_unbound_up x up /\ mem_unbound_down x dn }
+  = match dn, up  with
+    | (Some r, Some l) ->
+       if V.(l < r) then
+         { unbound_down=None; bu= mk_1_union (opn_opn_mk l r); unbound_up=None }
+       else empty_u()
+    | (_,_) -> empty_u ()
+    end
+
+  let inter_down_interval (dn : option V.t) (int: bound_interval)
+    ensures { forall x. mem x result <-> mem_unbound_down x dn /\ mem_r_interval x int }
+  = match dn with
+    | Some r ->
+       if V.(int.lower < r) then
+         let upper, upper_closed =
+           if V.(int.upper < r) then int.upper, int.upper_closed
+           else r, false
+         in
+         let res_int = __mk_interval int.lower_closed int.lower upper_closed upper in
+         { unbound_down=None; bu= mk_1_union res_int; unbound_up=None }
+       else empty_u()
+    | None -> empty_u()
+    end
+
+  let inter_up_interval (up : option V.t) (int: bound_interval)
+    ensures { forall x. mem x result <-> mem_unbound_up x up /\ mem_r_interval x int }
+  = match up with
+    | Some l ->
+       if V.(l < int.upper) then
+         let lower, lower_closed =
+           if V.(l < int.lower) then int.lower, int.lower_closed
+           else l, false
+         in
+         let res_int = __mk_interval lower_closed lower int.upper_closed int.upper in
+         { unbound_down=None; bu= mk_1_union res_int; unbound_up=None }
+       else empty_u()
+    | None -> empty_u()
+    end
+
+  let inter_up_bound (up : option V.t) (b : bound_union)
+    ensures { forall x. mem x result <-> mem_union x b /\ mem_unbound_up x up }
+  =
+    let ref res = empty_u() in
+    for i = 0 to length b.a - 1 do
+      invariant { forall x. mem x res <->
+                  gen_mem_sub_union x b.a 0 i /\ mem_unbound_up x up }
+      res <- union res (inter_up_interval up b.a[i])
+    done;
+    res
+
+  let inter_down_bound (dn : option V.t) (b : bound_union)
+    ensures { forall x. mem x result <-> mem_union x b /\ mem_unbound_down x dn }
+  =
+    let ref res = empty_u() in
+    for i = 0 to length b.a - 1 do
+      invariant { forall x. mem x res <->
+                  gen_mem_sub_union x b.a 0 i /\ mem_unbound_down x dn }
+      res <- union res (inter_down_interval dn b.a[i])
+    done;
+    res
+
+  let inter_bound_bound (b b' : bound_union)
+    ensures { forall x. mem x result <-> mem_union x b /\ mem_union x b' }
+  = { unbound_down=None; bu = inter_union b b'; unbound_up=None }
 
   let inter (u:u) (v:u) : u
-    ensures { _fmla } = _code ()
+    ensures { forall x. mem x result <-> mem x u /\ mem x v }
+  =
+    let (+) = union in
+      inter_down_down u.unbound_down v.unbound_down
+     +inter_up_up u.unbound_up v.unbound_up
+     +inter_bound_bound u.bu v.bu
+     +inter_down_up u.unbound_down v.unbound_up
+     +inter_down_up v.unbound_down u.unbound_up
+     +inter_down_bound v.unbound_down u.bu
+     +inter_down_bound u.unbound_down v.bu
+     +inter_up_bound u.unbound_up v.bu
+     +inter_up_bound v.unbound_up u.bu
 
-  let union (u:u) (v:u) : u
-    ensures { _fmla } = _code ()
+  let except (e : V.t) (u : u) : u
+    ensures { forall x. mem x u /\ x<>e.V.real <-> mem x result }
+  =
+   let everything_after = gt e in
+   let everything_before = lt e in
+   inter u (union everything_after everything_before)
+
+  let lemma eq_ext_aux0 (u v : u)
+    requires { forall x. mem x u <-> mem x v }
+    ensures { u.unbound_down = v.unbound_down }
+  =
+    match u.unbound_down, v.unbound_down with
+    | (Some l, None) ->
+        let petit = if V.(union_inf v.bu < l) then (union_inf v.bu) else l in
+        assert { mem petit.V.real u /\ not mem petit.V.real v};
+        absurd
+    | (None, Some l) ->
+        let petit = if V.(union_inf u.bu < l) then (union_inf u.bu) else l in
+        assert { mem petit.V.real v /\ not mem petit.V.real u};
+        absurd
+    | (Some l, Some l') ->
+        if V.(l < l') then begin
+          assert {mem l.V.real v /\ not mem l.V.real u}
+        end else if V.(l'<l) then begin
+          assert {mem l'.V.real u /\ not mem l'.V.real v}
+        end else ()
+    | (_, _) -> ()
+    end
+
+  let lemma eq_ext_aux1 (u v : u)
+    requires { forall x. mem x u <-> mem x v }
+    ensures { u.unbound_up = v.unbound_up }
+  = ()
+
+  let lemma eq_ext_aux2 (u v : u)
+    requires { forall x. mem x u <-> mem x v}
+    ensures { bound_union_weak_eq u.bu v.bu }
+  = ()
+
+
+  let predicate weak_eq (u v: u) =
+  any bool ensures {  result <->
+     (u.unbound_down = v.unbound_down /\ u.unbound_up = v.unbound_up
+      /\ bound_union_weak_eq u.bu v.bu) }
+
+  let lemma aux (u v : u)
+    requires { forall x. mem x u <-> mem x v }
+    ensures { weak_eq u v }
+  = ()
+
+  let lemma eq_ext (u v : u)
+    ensures { forall x. mem x u <-> mem x v }
+    requires { weak_eq u v }
+  = ()
 
   let subset (u:u) (v:u) : bool
-    ensures { _fmla } =  _codeb ()
+    ensures { result <-> forall x. mem x u -> mem x v }
+  =
+    weak_eq (inter u v) u
 
   let disjoint (u:u) (v:u) : bool
-    ensures { _fmla } = _codeb ()
+    ensures { result <-> forall x. not (mem x u /\ mem x v) }
+  = weak_eq (inter u v) (empty_u())
+
+  let function op_si_up_down (op : V.op) (o : option V.t) : option V.t
+    requires { V.si op }
+    ensures { forall x. mem_unbound_up x o <-> mem_unbound_up (op.V.ur x) result }
+    ensures { forall x. mem_unbound_down x o <-> mem_unbound_down (op.V.ur x) result }
+  = any option V.t ensures { result = match o with
+    | None -> None
+    | Some l -> Some (op.V.uq l)
+    end }
+
+  let op_si (op : V.op) (u : u)
+    requires { V.si op }
+    ensures { forall x. mem x u <-> mem (op.V.ur x) result }
+  =
+    let ud = op_si_up_down op u.unbound_down in
+    let uu = op_si_up_down op u.unbound_up in
+    let b = op_si_union op u.bu in
+    fix_untyped ud uu b
+
+  let function op_sd_up_down (op : V.op) (o : option V.t) : option V.t
+    requires { V.sd op }
+    ensures { forall x. mem_unbound_up x o <-> mem_unbound_down (op.V.ur x) result }
+    ensures { forall x. mem_unbound_down x o <-> mem_unbound_up (op.V.ur x) result }
+  = any option V.t ensures { result = match o with
+    | None -> None
+    | Some l -> Some (op.V.uq l)
+    end }
+
+  let op_sd (op : V.op) (u : u)
+    requires { V.sd op }
+    ensures { forall x. mem x u <-> mem (op.V.ur x) result }
+  =
+    let ud = op_sd_up_down op u.unbound_down in
+    let uu = op_sd_up_down op u.unbound_up in
+    let b = op_sd_union op u.bu in
+    fix_untyped uu ud b
+
+  let cube (u : u) : u
+    ensures { forall x. mem x u <-> mem (x*.x*.x) result }
+  =
+    let op = { V.ur=(fun x -> x*.x*.x); V.uq=(fun q -> V.(q*q*q))} in
+    op_si op u
+
+  (* TODO : talk about val neg in report *)
+  let neg (u : u) : u
+    ensures { forall x. mem x u <-> mem (0.0 -. x) result }
+  =
+    let op = { V.ur=(fun x -> 0.0 -. x); V.uq=(fun q -> V.(q-q-q))} in
+    op_sd op u
+
+  let mul_cst (c : V.t) (u : u) : u
+    ensures { forall x. mem x u -> mem (x *. c) result }
+  =
+    let op = { V.ur=( *.) c.V.real; V.uq=V.((*) c) } in
+    if V.(c < c-c) then
+      begin
+        assert { c.V.real <. 0.0 }; (* just a hint for efficiency *)
+        op_sd op u
+      end
+    else if V.(c-c < c) then
+      op_si op u
+    else (* c = 0 *)
+      singleton c
+
+  let function op_nsi_up (op : V.op) (o : option V.t) : u
+    requires { V.nsi op }
+    ensures { forall x. mem_unbound_up x o -> mem (op.V.ur x) result }
+  = any u ensures { result =
+    match o with
+    | None -> empty_u()
+    | Some l ->
+        let nl = op.V.uq l in union (singleton nl) (gt nl)
+    end }
+
+  let function op_nsi_down (op : V.op) (o : option V.t) : u
+    requires { V.nsi op }
+    ensures { forall x. mem_unbound_down x o -> mem (op.V.ur x) result }
+  = any u ensures { result =
+    match o with
+    | None -> empty_u()
+    | Some l ->
+        let nl = op.V.uq l in union (singleton nl) (lt nl)
+    end }
+
+  let op_nsi (op : V.op) (u : u)
+    requires { V.nsi op }
+    ensures { forall x. mem x u -> mem (op.V.ur x) result }
+  =
+    let ud = op_nsi_down op u.unbound_down in
+    let uu = op_nsi_up op u.unbound_up in
+    let b = op_nsi_union op u.bu in
+    union uu (union ud {unbound_down=None;unbound_up=None;bu=b})
+
+  use real.Truncate use real.FromInt
+
+  let ceil (u : u) : u
+    ensures { forall x. mem x u -> mem (from_int (ceil x)) result }
+  =
+    let op = { V.ur=(fun x -> from_int (ceil x)); V.uq=(fun q -> V.(of_int (ceil q))) } in
+    assert { forall x x'. x<=.x' -> from_int (ceil x) <=. from_int (ceil x') };
+    op_nsi op u
+
+  let floor (u : u) : u
+    ensures { forall x. mem x u -> mem (from_int (floor x)) result }
+  =
+    let op = { V.ur=(fun x -> from_int (floor x)); V.uq=(fun q -> V.(of_int (floor q))) } in
+    assert { forall x x'. x<=.x' -> from_int (floor x) <=. from_int (floor x') };
+    op_nsi op u
+
+  let truncate (u : u) : u
+    ensures { forall x. mem x u -> mem (from_int (truncate x)) result }
+  =
+    let op = { V.ur=(fun x -> from_int (truncate x)); V.uq=(fun q -> V.(of_int (truncate q))) } in
+    assert { forall x x'. x<=.x' -> from_int (truncate x) <=. from_int (truncate x') };
+    op_nsi op u
+
+  function relu (x:real) : real = if x >=. 0.0 then x else 0.0
+  let relu (u : u) : u
+    ensures { forall x. mem x u -> mem (relu x) result }
+  =
+    let op = { V.ur=relu;
+               V.uq=(fun q -> V.(if (q-q) <= q then q else (q-q))) }
+    in
+    assert { forall x x'. x<=.x' ->  relu x <=. relu x' };
+    op_nsi op u
+
+
 end
 end

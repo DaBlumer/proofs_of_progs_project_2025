@@ -459,6 +459,8 @@
       },
       "gen_mem_sub_union": { "prover": "alt-ergo@2.6.0", "time": 0.164 },
       "gen_replace_mem_union": { "prover": "alt-ergo@2.6.0", "time": 0.361 },
+      "help": { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+      "help'": { "prover": "alt-ergo@2.6.0", "time": 0.048 },
       "inbetween_ordered_intervals": {
         "tactic": "split_vc",
         "children": [
@@ -663,6 +665,7 @@
         ]
       },
       "mem_union_unique": { "prover": "z3@4.8.12", "time": 0.109 },
+      "mk_1_union": { "prover": "alt-ergo@2.6.0", "time": 0.077 },
       "mul_cst_union": {
         "tactic": "split_vc",
         "children": [
@@ -753,9 +756,11 @@
       "op_si_union": {
         "tactic": "split_vc",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "z3@4.8.12", "time": 1 },
-          { "prover": "alt-ergo@2.6.0", "time": 1.5 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
+          { "prover": "z3@4.8.12", "time": 0.583 },
+          { "prover": "alt-ergo@2.6.0", "time": 1.4 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 }
         ]
       },
       "outside_ordered_intervals": { "prover": "z3@4.8.12", "time": 0.195 },
