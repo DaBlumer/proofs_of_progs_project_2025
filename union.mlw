@@ -5,7 +5,6 @@ module Skel
   use option.Option
   use array_utils.ArrayUtils
 
-  (*clone field.Intf as V with axiom equal_is_eq*)
   use interval.BoundInterval
   use interval.BoundUnion
   scope Make
@@ -47,6 +46,15 @@ module Skel
        end
     }
 
+  let predicate unique_repr_of_all (udown uup : option V.t) (bu : bound_union)
+  = any bool ensures { result <->
+      match udown, uup with
+      | Some a, Some b ->
+          if V.(a = b /\ bu.a.length > 0) then a.V.real = 0.0
+          else true
+      | _, _ -> true
+  end }
+
   let predicate bound_unbound_disj (udown uup : option V.t) (bu : bound_union)
   = any bool ensures { result <->
      bound_unbound_disj_down udown bu /\ bound_unbound_disj_up uup bu
@@ -57,8 +65,9 @@ module Skel
     unbound_up : option V.t;
     bu : bound_union
   } invariant {
-     bound_unbound_disj unbound_down unbound_up bu /\
-     unbound_unbound_disj unbound_down unbound_up bu
+        bound_unbound_disj unbound_down unbound_up bu
+     /\ unbound_unbound_disj unbound_down unbound_up bu
+     /\ unique_repr_of_all unbound_down unbound_up bu
   }
 
   (* just some unsound placeholders *)
@@ -235,6 +244,7 @@ module Skel
                  untyped_mem x unbound_down unbound_up bu)
       /\ unbound_unbound_disj d u b
       /\ bound_unbound_disj d u b
+      /\ unique_repr_of_all d u b
     }
   =
     let d, u, b = (unbound_down, unbound_up, { a = copy bu.a }) in
@@ -245,9 +255,8 @@ module Skel
          if V.(l < r) then d, u, b
          else if V.(l = r) then
           if b.a.length > 0 then
-            let p = b.a[0].lower in
-            let s = { a = make 1 (singleton_mk p)} in
-            V.(Some p, Some p, s)
+            let s = { a = make 1 (singleton_mk V.(of_int 0))} in
+            V.(Some (of_int 0), Some (of_int 0), s)
           else V.(Some l, Some l, empty_union())
         else
           let hehe = { a = make 1 (singleton_mk V.(of_int 0))} in
@@ -284,7 +293,8 @@ module Skel
 
   let function all_u () : u
     ensures { forall x. mem x result }
-  = V.{unbound_down=Some (of_int 0); unbound_up=Some (of_int 0); bu=empty_union()}
+  = V.{unbound_down=Some (of_int 0); unbound_up=Some (of_int 0);
+       bu={ a = make 1 (singleton_mk V.(of_int 0)) } }
 
   let function gt (q:V.t) : u
     ensures { forall x. mem x result <-> x >. q.V.real }
