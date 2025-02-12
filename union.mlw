@@ -34,6 +34,19 @@ module Skel
        end
      )}
 
+  let predicate unbound_unbound_disj (udown uup : option V.t) (bu : bound_union) =
+    any bool ensures { result <->
+       match udown, uup with
+       | Some a, Some b ->
+          if length bu.a = 0 then
+            V.(a <= b)
+          else if V.(union_sup bu = union_inf bu) then
+            V.(a <= b /\ (a = b -> real a = real (union_inf bu)))
+          else true
+       | _, _ -> true
+       end
+    }
+
   let predicate bound_unbound_disj (udown uup : option V.t) (bu : bound_union)
   = any bool ensures { result <->
      bound_unbound_disj_down udown bu /\ bound_unbound_disj_up uup bu
@@ -43,7 +56,10 @@ module Skel
     unbound_down : option V.t;
     unbound_up : option V.t;
     bu : bound_union
-  } invariant { bound_unbound_disj unbound_down unbound_up bu }
+  } invariant {
+     bound_unbound_disj unbound_down unbound_up bu /\
+     unbound_unbound_disj unbound_down unbound_up bu
+  }
 
   (* just some unsound placeholders *)
   predicate _fmla
@@ -148,7 +164,6 @@ module Skel
     else
       (down, Some b.a[i].lower, {a=replace b.a (empty()) i (i+1)})
 
-
   let function fix_untyped_up (unbound_down unbound_up : option V.t) (bu : bound_union)
     ensures { forall x. let (d', u', bu') = result in
                         untyped_mem x d' u' bu' <->
@@ -202,20 +217,53 @@ module Skel
     end;
     (var_d, var_u, var_bu)
 
+  let function fix_untyped_bound (unbound_down unbound_up : option V.t) (bu : bound_union)
+    ensures { let (d', u', b') = result in
+              forall x. untyped_mem x d' u' b' <->
+                        untyped_mem x unbound_down unbound_up bu }
+    ensures { let (d', u', b') = result in bound_unbound_disj d' u' b' }
+  =
+    let d, u, b = fix_untyped_up unbound_down unbound_up bu in
+    let d, u, b = fix_untyped_down d u b in
+    d,u,b
+
+
+  let function fix_untyped_unbound (unbound_down unbound_up : option V.t) (bu : bound_union)
+    requires { bound_unbound_disj unbound_down unbound_up bu }
+    ensures { let (d, u, b) = result in
+      (forall x. untyped_mem x d u b <->
+                 untyped_mem x unbound_down unbound_up bu)
+      /\ unbound_unbound_disj d u b
+      /\ bound_unbound_disj d u b
+    }
+  =
+    let d, u, b = (unbound_down, unbound_up, { a = copy bu.a }) in
+    if b.a.length > 0 && V.(union_sup b <> union_inf b) then
+        d, u, b
+    else match d, u with
+      | Some l, Some r ->
+         if V.(l < r) then d, u, b
+         else if V.(l = r) then
+          if b.a.length > 0 then
+            let p = b.a[0].lower in
+            let s = { a = make 1 (singleton_mk p)} in
+            V.(Some p, Some p, s)
+          else V.(Some l, Some l, empty_union())
+        else
+          let hehe = { a = make 1 (singleton_mk V.(of_int 0))} in
+          V.(Some (of_int 0), Some (of_int 0), hehe)
+      | _, _ -> d, u, b
+    end
+
+
   let function fix_untyped (unbound_down unbound_up : option V.t) (bu : bound_union)
     ensures { forall x. mem x result <->
                         untyped_mem x unbound_down unbound_up bu }
   =
-    let d, u, b = fix_untyped_up unbound_down unbound_up bu in
-    assert { bound_unbound_disj_up u b };
-    let d', u', b' = fix_untyped_down d u b in
-    assert { bound_unbound_disj_up u' b' };
-    assert { bound_unbound_disj_down d' b' };
+    let d, u, b = fix_untyped_bound unbound_down unbound_up bu in
+    let d', u', b' = fix_untyped_unbound d u b in
     {unbound_down=d'; unbound_up=u'; bu=b'}
 
-  let function empty_u () : u
-    ensures { forall x. not mem x result }
-  = {unbound_down=None; unbound_up=None; bu=empty_union()}
 
   let function singleton (q:V.t) : u
     ensures { forall x. mem x result <-> q.V.real = x }
@@ -229,6 +277,14 @@ module Skel
       assert { forall x. (mem_r_interval x (singleton_mk q)) <-> x = q};
       r
     end
+
+  let function empty_u () : u
+    ensures { forall x. not mem x result }
+  = {unbound_down=None; unbound_up=None; bu=empty_union()}
+
+  let function all_u () : u
+    ensures { forall x. mem x result }
+  = V.{unbound_down=Some (of_int 0); unbound_up=Some (of_int 0); bu=empty_union()}
 
   let function gt (q:V.t) : u
     ensures { forall x. mem x result <-> x >. q.V.real }
@@ -386,7 +442,7 @@ module Skel
 
   predicate is_unbound_down (u : u) = u.unbound_down <> None
   predicate is_unbound_up (u : u) = u.unbound_up <> None
-  
+
   let lemma is_unbound_down_prop (u : u) (x : real)
     requires { is_unbound_down u }
     ensures { result <. x /\ mem result u }
@@ -401,7 +457,7 @@ module Skel
     let l = match u.unbound_up with None -> absurd | Some l -> l end in
     V.(if real l >. x then real l +. 1.0 else x +. 1.0)
 
-  let lemma nis_unbound_down_prop (u : u) : real 
+  let lemma nis_unbound_down_prop (u : u) : real
     requires { not is_unbound_down u }
     ensures { forall y. y <. result -> not mem y u }
   =
@@ -416,7 +472,7 @@ module Skel
       | Some r -> r.V.real -. 1.0
     end
 
-  let lemma nis_unbound_up_prop (u : u) : real 
+  let lemma nis_unbound_up_prop (u : u) : real
     requires { not is_unbound_up u }
     ensures { forall y. y >. result -> not mem y u }
   =
@@ -431,13 +487,6 @@ module Skel
       | Some r -> r.V.real +. 1.0
     end
 
-(*  let lemma gap_after_down (u : u) (l : V.t) (y : real): real
-    requires { u.unbound_down = Some l }
-    requires { y >. l.V.real }
-    ensures { result <. y /\ not mem result u}
-  =
-    if u.bu.a.length > 0 && u.bu.a[0].lower_closed && u.bu.a[0].lower = l then*)
-      
   let lemma eq_ext_aux0 (u v : u)
     requires { forall x. mem x u <-> mem x v }
     ensures { u.unbound_down = v.unbound_down }
@@ -454,7 +503,9 @@ module Skel
       absurd
     | (Some l, Some l') ->
         if V.(l < l') then begin
-          assert {mem l.V.real v /\ not mem l.V.real u}
+          if u.bu.a.length > 0 && V.(u.bu.a[0].lower=u.bu.a[0].upper) then
+            ()
+          else assert {mem l.V.real v /\ not mem l.V.real u}
         end else if V.(l'<l) then begin
           assert {mem l'.V.real u /\ not mem l'.V.real v}
         end else ()

@@ -461,6 +461,7 @@
       "gen_replace_mem_union": { "prover": "alt-ergo@2.6.0", "time": 0.361 },
       "help": { "prover": "alt-ergo@2.6.0", "time": 0.035 },
       "help'": { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+      "help''": { "prover": "z3@4.8.12", "time": 0.076 },
       "inbetween_ordered_intervals": {
         "tactic": "split_vc",
         "children": [

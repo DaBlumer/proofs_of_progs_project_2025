@@ -263,7 +263,9 @@ module BoundInterval
 
   let function singleton_mk a
     ensures { forall x. mem_r_interval x result <-> x = a.V.real }
-  = clo_clo_mk a a
+    ensures { let r = result in
+              r.lower=a=r.upper /\ r.lower_closed=true=r.upper_closed }
+  = __mk_interval true a true a
 
   lemma before_interval_trans : forall i j k.
     before_interval i j -> before_interval j k -> before_interval i k
@@ -756,6 +758,7 @@ module BoundUnion
 
   let function empty_union()
     ensures { forall x. not mem_union x result }
+    ensures { length result.a = 0 }
   = {a=empty()}
 
   let function singleton_union (q : V.t) : bound_union
@@ -900,5 +903,11 @@ module BoundUnion
 
   lemma help : forall x bu. (x <. (union_inf bu).V.real) -> not mem_union x bu
   lemma help' : forall x bu. (x >. (union_sup bu).V.real) -> not mem_union x bu
+  let lemma help'' (bu : bound_union)
+    requires { bu.a.length > 0 }
+    requires { union_sup bu = union_inf bu }
+    ensures { bu.a.length = 1 }
+    ensures { bu.a[0].lower = bu.a[0].upper }
+  = ()
 
 end
