@@ -14,12 +14,25 @@ module Skel
   let predicate bound_unbound_disj_down (udown : option V.t) (bu : bound_union)
   = any bool ensures { result <-> (
      bu.a.length > 0 ->
-       match udown with | None -> true | Some x -> V.(x <= union_inf bu) end) }
+       match udown with
+       | None -> true
+       | Some x -> V.(x < union_inf bu \/
+                     (x = union_inf bu /\ not bu.a[0].lower_closed)
+                     \/ (x = union_inf bu /\ (bu.a[0].lower=bu.a[0].upper)))
+       end
+     )}
 
   let predicate bound_unbound_disj_up (uup : option V.t) (bu : bound_union)
   = any bool ensures { result <-> (
      bu.a.length > 0 ->
-       match uup with | None -> true | Some x -> V.(union_sup bu <= x) end) }
+       let i = bu.a.length - 1 in
+       match uup with
+       | None -> true
+       | Some x -> V.(union_sup bu < x \/
+                     (x = union_sup bu /\ not bu.a[i].upper_closed)
+                     \/ (x = union_sup bu /\ (bu.a[i].upper=bu.a[i].lower)))
+       end
+     )}
 
   let predicate bound_unbound_disj (udown uup : option V.t) (bu : bound_union)
   = any bool ensures { result <->
@@ -84,69 +97,106 @@ module Skel
     =
       ()
 
-  let function fix_untyped (unbound_down unbound_up : option V.t) (bu : bound_union)
-    ensures { forall x. mem x result <->
+  let lemma extend_from_down_core (down : option V.t) (b : bound_union) (x : real)
+    requires { not gobbles_down down b }
+    requires { not bound_unbound_disj_down down b }
+    requires {  mem_unbound_down x (Some b.a[0].upper) }
+    ensures { mem_r_interval x b.a[0] \/ mem_unbound_down x down }
+  = ()
+
+  let lemma extend_from_up_core (up : option V.t) (b : bound_union) (x : real)
+    requires { not gobbles_up up b }
+    requires { not bound_unbound_disj_up up b }
+    requires {  mem_unbound_up x (Some b.a[length b.a - 1].lower) }
+    ensures { mem_r_interval x b.a[length b.a - 1] \/ mem_unbound_up x up }
+  = ()
+
+  let function extend_from_down (down up : option V.t) (b : bound_union)
+    requires { not gobbles_down down b }
+    requires { not bound_unbound_disj_down down b }
+    ensures { false \/ (
+      let (down', up', b') = result in
+          (forall x. untyped_mem x down' up' b' <-> untyped_mem x down up b)
+       /\ (bound_unbound_disj_down down' b')
+       /\ (bound_unbound_disj_up up b) -> (bound_unbound_disj_up up' b'))
+    }
+  =
+    let Some d = down in
+    assert { forall x. mem_r_interval x b.a[0] \/ mem_unbound_down x down <->
+         ((b.a[0].upper_closed /\ x = b.a[0].upper) \/ mem_unbound_down x (Some b.a[0].upper))};
+    if b.a[0].upper_closed then
+      (Some b.a[0].upper, up, {a=replace b.a (make 1 (singleton_mk b.a[0].upper)) 0 1})
+    else
+      (Some b.a[0].upper, up, {a=replace b.a (empty()) 0 1})
+
+  let function extend_from_up (down up : option V.t) (b : bound_union)
+    requires { not gobbles_up up b }
+    requires { not bound_unbound_disj_up up b }
+    ensures { (
+      let (down', up', b') = result in
+          (forall x. untyped_mem x down' up' b' <-> untyped_mem x down up b)
+       /\ (bound_unbound_disj_up up' b')
+       /\ (bound_unbound_disj_down down b -> bound_unbound_disj_down down' b'))
+    }
+  =
+    let i = length b.a - 1 in
+    let Some u = up in
+    if b.a[i].lower_closed then
+      (down, Some b.a[i].lower, {a=replace b.a (make 1 (singleton_mk b.a[i].lower)) i (i+1)})
+    else
+      (down, Some b.a[i].lower, {a=replace b.a (empty()) i (i+1)})
+
+
+  let function fix_untyped_up (unbound_down unbound_up : option V.t) (bu : bound_union)
+    ensures { forall x. let (d', u', bu') = result in
+                        untyped_mem x d' u' bu' <->
                         untyped_mem x unbound_down unbound_up bu }
+    ensures { let (d', u', bu') = result in
+              bound_unbound_disj_up u' bu'
+              /\ (bound_unbound_disj_down unbound_down bu -> bound_unbound_disj_down d' bu') }
   =
     let ref var_bu = {a = Array.copy bu.a} in
+    let ref var_d = unbound_down in let ref var_u = unbound_up in
     while gobbles_up unbound_up var_bu do
       variant { length var_bu.a }
       invariant { forall i. 0 <= i < length var_bu.a - 1 ->
                             var_bu.a[i]<<var_bu.a[i+1] }
-      invariant { forall x. untyped_mem x unbound_down unbound_up var_bu
+      invariant { forall x. untyped_mem x var_d var_u var_bu
                         <-> untyped_mem x unbound_down unbound_up bu }
+      invariant { bound_unbound_disj_down unbound_down bu ->
+                  bound_unbound_disj_down var_d var_bu }
       let i = length var_bu.a - 1 in
       let new_a = replace var_bu.a (empty()) i (i+1) in
       var_bu <- {a = new_a}
     done;
-    if not bound_unbound_disj_up unbound_up var_bu then
-      match unbound_up with None -> absurd | Some r ->
-        let i = length var_bu.a - 1 in
-        (*assert { V.(var_bu.a[i].lower <= r) };*)
-        let new_lst = {var_bu.a[i] with upper_closed=true; upper=r} in
-        label L in
-        assert { forall x. (mem_r_interval x var_bu.a[i] \/ mem_unbound_up x unbound_up)
-                      <-> (mem_r_interval x new_lst \/ mem_unbound_up x unbound_up) };
-        assert { forall x. (mem_union x var_bu \/ mem_unbound_up x unbound_up)
-                 <-> (
-                    gen_mem_sub_union x var_bu.a 0 (length var_bu.a - 1)
-                    \/ mem_unbound_up x unbound_up
-                    \/ mem_r_interval x new_lst
-                 ) };
-        var_bu.a[i] <- new_lst;
-        assert { forall x. (mem_union x (var_bu at L) \/ mem_unbound_up x unbound_up)
-                           <->(mem_union x (var_bu ) \/ mem_unbound_up x unbound_up) };
-      end;
+    if not bound_unbound_disj_up var_u var_bu then begin
+      let (var_d', var_u', var_bu') = extend_from_up var_d var_u var_bu
+      in (var_d, var_u, var_bu) <- (var_d', var_u', var_bu')
+    end;
+    assert { forall x. untyped_mem x var_d var_u var_bu
+                        <-> untyped_mem x unbound_down unbound_up bu };
+    assert { bound_unbound_disj_up var_u var_bu };
+    (var_d, var_u, var_bu)
 
-    while gobbles_down unbound_down var_bu do
-      variant { length var_bu.a }
-      invariant { forall i. 0 <= i < length var_bu.a - 1 ->
-                            var_bu.a[i]<<var_bu.a[i+1] }
-      invariant { forall x. untyped_mem x unbound_down unbound_up var_bu
-                        <-> untyped_mem x unbound_down unbound_up bu }
-      invariant { bound_unbound_disj_up unbound_up var_bu }
-      let new_a = replace var_bu.a (empty()) 0 1 in
-      var_bu <- {a = new_a}
-    done;
-    if not bound_unbound_disj_down unbound_down var_bu then
-      match unbound_down with None -> absurd | Some l ->
-        (*assert { bound_unbound_disj_down unbound_down var_bu };*)
-        assert { bound_unbound_disj_up unbound_up var_bu };
-        label L2 in
-        let new_lst = {var_bu.a[0] with lower_closed=true; lower=l} in
-        assert { forall x. (mem_r_interval x var_bu.a[0] \/ mem_unbound_down x unbound_down)
-                      <-> (mem_r_interval x new_lst \/ mem_unbound_down x unbound_down) };
-        assert { forall x. (mem_union x var_bu \/ mem_unbound_down x unbound_down)
-                 <-> (
-                    gen_mem_sub_union x var_bu.a 1 (length var_bu.a)
-                    \/ mem_unbound_down x unbound_down
-                    \/ mem_r_interval x new_lst
-                 ) };
-        var_bu.a[0] <- new_lst;
-         assert { forall x. (mem_union x (var_bu at L2) \/ mem_unbound_down x unbound_down)
-                   <->(mem_union x (var_bu ) \/ mem_unbound_down x unbound_down) };
-      end;
-    {bu=var_bu; unbound_up=unbound_up; unbound_down=unbound_down}
+  let function fix_untyped_down (unbound_down unbound_up : option V.t) (bu : bound_union)
+    ensures { forall x. let (d', u', bu') = result in
+                        untyped_mem x d' u' bu' <->
+                        untyped_mem x unbound_down unbound_up bu }
+    ensures { let (d', u', bu') = result in
+              bound_unbound_disj_down d' bu'
+              /\ (bound_unbound_disj_up unbound_up bu -> bound_unbound_disj_up u' bu') }
+  = any (option V.t, option V.t, bound_union)
+
+  let function fix_untyped (unbound_down unbound_up : option V.t) (bu : bound_union)
+    ensures { forall x. mem x result <->
+                        untyped_mem x unbound_down unbound_up bu }
+  =
+    let d, u, b = fix_untyped_up unbound_down unbound_up bu in
+    assert { bound_unbound_disj_up u b };
+    let d', u', b' = fix_untyped_down d u b in
+    assert { bound_unbound_disj_up u' b' };
+    assert { bound_unbound_disj_down d' b' };
+    {unbound_down=d'; unbound_up=u'; bu=b'}
 
   let function empty_u () : u
     ensures { forall x. not mem x result }
