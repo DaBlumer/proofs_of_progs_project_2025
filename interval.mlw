@@ -689,8 +689,6 @@ module BoundUnion
     let ref i = 0 in
     while i < length bu.a && incl_interval_union bu.a[i] bu' do
       invariant { 0 <= i <= length bu.a }
-      (* invariant { forall j. 0 <= j < i -> *)
-      (*             forall x. (mem_r_interval x bu.a[j] -> mem_union x bu') } *)
       invariant { forall j. 0 <= j < i -> incl_interval_union bu.a[j] bu' }
       variant { length bu.a - i }
       i <- i+1
@@ -709,11 +707,6 @@ module BoundUnion
     requires { incl_interval int u.a[i] /\ incl_interval int u.a[j] }
     ensures { i = j }
   = ()
-
-
-  (* axiom array_ext : forall a b: array 'a. *)
-  (*    (a.length = b.length /\ (forall i. 0<=i<a.length -> a[i]=b[i])) *)
-  (*    -> a = b *)
 
   let lemma bound_union_ext_aux'' (bu bu' : bound_union)
     requires { incl_union bu bu' }
@@ -744,10 +737,6 @@ module BoundUnion
         end
       end
     done
-
-  (* lemma bound_union_ext : forall bu bu'. *)
-  (*   incl_union bu bu' -> incl_union bu' bu -> *)
-  (*   (bu = bu' by bound_union'eq bu bu') *)
 
   let predicate bound_union_weak_eq (bu bu' : bound_union) = any bool
     ensures { result <-> weak_array_eq bu.a bu'.a }
@@ -909,5 +898,6 @@ module BoundUnion
     ensures { bu.a.length = 1 }
     ensures { bu.a[0].lower = bu.a[0].upper }
   = ()
+
 
 end

@@ -497,11 +497,67 @@ module Skel
       | Some r -> r.V.real +. 1.0
     end
 
+  let lemma cincl_bound_prop (u : u) (x : real)
+    requires { length u.bu.a > 0 }
+    requires { union_inf u.bu <=. x <=. union_sup u.bu }
+    ensures { not mem_unbound_down x u.unbound_down }
+    ensures { not mem_unbound_up x u.unbound_up }
+  =
+    match u.unbound_down, u.unbound_up with
+    | Some l, Some r -> ()
+    | _, _ -> ()
+    end
+
+  let lemma has_all_form (u : u)
+    requires { forall x. mem x u }
+    ensures {
+      match u.unbound_down, u.unbound_up with
+        | Some x(*, Some y*), _ -> V.(real x = 0.0(* = real y*))
+        | _, _ -> false
+      end
+    }
+  =
+    if length u.bu.a = 0 then
+      match u.unbound_up, u.unbound_down with
+      | Some x, _ | _, Some x -> assert { not mem x u }
+      | None, None -> assert { not mem 0.0 u }
+      end
+    else if length u.bu.a > 1 then
+      let x, y = u.bu.a[0].upper, u.bu.a[1].lower in
+      if V.(x = y) then begin
+        assert { x <=. union_sup u.bu by (u.bu.a[0] << u.bu.a[u.bu.a.length-1] )};
+        assert { not mem x u }
+      end else begin
+        let z = V.((x + y) / (of_int 2)) in
+        assert { not mem z u }
+      end
+    else(* |bu|=1 *) match u.unbound_down, u.unbound_up with
+    | None, _ -> assert { not mem (u.bu.a[0].lower -. 1.0) u }
+    | _, None -> assert { not mem (u.bu.a[0].upper +. 1.0) u }
+    | Some l, Some r ->
+       if V.(l < u.bu.a[0].lower) then begin
+         assert { not mem l u }; absurd
+       end else if V.(u.bu.a[0].upper < r) then begin
+         assert { not mem r u }; absurd
+       end else begin
+         if V.(u.bu.a[0].lower < u.bu.a[0].upper) then
+           assert { not mem u.bu.a[0].lower u }
+         else begin
+           assert { u.bu.a[0].lower = u.bu.a[0].upper }
+         end
+       end
+    end
+
   let lemma eq_ext_aux0 (u v : u)
     requires { forall x. mem x u <-> mem x v }
-    ensures { u.unbound_down = v.unbound_down }
+    ensures {
+      match u.unbound_down, v.unbound_down with
+        | None, None -> true
+        | Some l, Some l' -> V.(l' <= l)
+        | _, _ -> false
+      end
+    }
   =
-    let one = V.of_int 1 in
     match u.unbound_down, v.unbound_down with
     | (Some _, None) ->
       let x = nis_unbound_down_prop v in
@@ -513,25 +569,140 @@ module Skel
       absurd
     | (Some l, Some l') ->
         if V.(l < l') then begin
-          if u.bu.a.length > 0 && V.(u.bu.a[0].lower=u.bu.a[0].upper) then
-            ()
+          if u.bu.a.length > 0 && V.(u.bu.a[0].lower=u.bu.a[0].upper=l) then
+            if u.bu.a.length > 1 then
+              if u.bu.a[0].upper_closed then
+                let smaller = V.(if u.bu.a[1].lower < l' then u.bu.a[1].lower else l') in
+                let x = V.(smaller + u.bu.a[0].upper).V.real /. 2.0 in
+                assert {mem x v /\ not mem x u}
+              else assert { not mem u.bu.a[0].upper u }
+            else match u.unbound_up with
+            | None ->
+                let x = V.(real (l'+l)) /. 2.0 in
+                assert {mem x v /\ not mem x u}
+            | Some r ->
+                if V.(l < r) then begin
+                  let smaller = V.(if l' < r then l' else r) in
+                  let x = V.(real (smaller+l)) /. 2.0 in
+                  assert {mem x v /\ not mem x u}
+                end else begin (* SO HERE WE HAVE TO HANDLE THE BIG ASS CASE *)
+                  assert { forall x. mem x u };
+                  absurd
+                end
+            end
           else assert {mem l.V.real v /\ not mem l.V.real u}
-        end else if V.(l'<l) then begin
-          assert {mem l'.V.real u /\ not mem l'.V.real v}
-        end else ()
-    | (_, _) -> ()
+        end
+        else assert { V.(l' <= l) }
+    | (None, None) -> ()
     end
 
+  let lemma eq_ext_aux0' (u v : u)
+    requires { forall x. mem x u <-> mem x v }
+    ensures {
+      match u.unbound_down, v.unbound_down with
+        | None, None -> true
+        | Some l, Some l' -> V.(l <= l')
+        | _, _ -> false
+      end
+    }
+  = ()
+
+  let lemma eq_ext_aux0'' (u v : u)
+    requires { forall x. mem x u <-> mem x v }
+    ensures { u.unbound_down = v.unbound_down }
+  = match u.unbound_down, v.unbound_down with
+    | None, None -> ()
+    | Some l, Some l' -> assert { l <=. l' /\ l' <=. l }
+    | _, _ -> absurd
+    end
 
   let lemma eq_ext_aux1 (u v : u)
     requires { forall x. mem x u <-> mem x v }
-    ensures { u.unbound_up = v.unbound_up }
+    ensures {
+      match u.unbound_up, v.unbound_up with
+        | None, None -> true
+        | Some r, Some r' -> V.(r <= r')
+        | _, _ -> false
+      end
+    }
+  =
+    match u.unbound_up, v.unbound_up with
+    | (Some _, None) ->
+      let x = nis_unbound_up_prop v in
+      let y = is_unbound_up_prop u x in
+      absurd
+    | (None, Some _) ->
+      let x = nis_unbound_up_prop u in
+      let y = is_unbound_up_prop v x in
+      absurd
+    | (Some r, Some r') ->
+        if V.(r' < r) then begin
+          let i = length u.bu.a - 1 in
+          if u.bu.a.length > 0 && V.(u.bu.a[i].lower=u.bu.a[i].upper=r) then
+            if u.bu.a.length > 1 then
+              if u.bu.a[i].lower_closed then begin
+                let bigger = V.(if u.bu.a[i-1].upper<r' then r' else u.bu.a[i-1].upper) in
+                let x = V.(bigger + u.bu.a[i].lower).V.real /. 2.0 in
+                assert {mem x v /\ not mem x u}
+              end else assert { not mem u.bu.a[i].lower u }
+            else match u.unbound_down with
+            | None ->
+                let x = V.(real (r'+r)) /. 2.0 in
+                assert {mem x v /\ not mem x u}
+            | Some l ->
+                if V.(l < r) then begin
+                  let bigger = V.(if r' < l then l else r') in
+                  let x = V.(real (bigger+r)) /. 2.0 in
+                  assert {mem x v /\ not mem x u}
+                end else begin
+                  assert { forall x. mem x u };
+                  absurd
+                end
+            end
+          else assert {mem r.V.real v /\ not mem r.V.real u}
+        end
+        else assert { V.(r' <= r') }
+    | (None, None) -> ()
+    end
+
+  let lemma eq_ext_aux1' (u v : u)
+    requires { forall x. mem x u <-> mem x v }
+    ensures {
+      match u.unbound_up, v.unbound_up with
+        | None, None -> true
+        | Some r, Some r' -> V.(r <= r')
+        | _, _ -> false
+      end
+    }
   = ()
 
-  let lemma eq_ext_aux2 (u v : u)
+  let lemma eq_ext_aux1'' (u v : u)
+    requires { forall x. mem x u <-> mem x v }
+    ensures { u.unbound_up = v.unbound_up }
+  = match u.unbound_up, v.unbound_up with
+    | None, None -> ()
+    | Some r, Some r' -> assert { r <=. r' /\ r' <=. r }
+    | _, _ -> absurd
+    end
+
+  let lemma eq_ext_aux2 (u v : u) (x : real)
+    requires { forall x. mem x u <-> mem x v }
+    requires { u.unbound_down = v.unbound_down }
+    requires { u.unbound_up = v.unbound_up }
+    requires { mem_union x u.bu }
+    ensures { mem_union x v.bu }
+  =
+    assert { mem x u }; assert { mem x v };
+    assert { not mem_unbound_up x u.unbound_up };
+    assert { not mem_unbound_down x u.unbound_down }
+
+  let lemma eq_ext_aux3 (u v : u)
     requires { forall x. mem x u <-> mem x v}
     ensures { bound_union_weak_eq u.bu v.bu }
-  = ()
+  =
+    assert { u.unbound_down = v.unbound_down };
+    assert { u.unbound_up = v.unbound_up };
+    assert { forall x. mem_union x u.bu <-> mem_union x v.bu }
 
 
   let predicate weak_eq (u v: u) =
