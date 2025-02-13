@@ -226,7 +226,8 @@
                       {
                         "tactic": "split_vc",
                         "children": [
-                          null, { "prover": "alt-ergo@2.6.0", "time": 0.06 }
+                          { "prover": "z3@4.8.12", "time": 17.8 },
+                          { "prover": "alt-ergo@2.6.0", "time": 0.06 }
                         ]
                       },
                       { "prover": "alt-ergo@2.6.0", "time": 0.055 }
@@ -516,7 +517,8 @@
                       {
                         "tactic": "split_vc",
                         "children": [
-                          null, { "prover": "z3@4.8.12", "time": 0.175 }
+                          { "prover": "cvc5@1.1.2", "time": 2.2 },
+                          { "prover": "z3@4.8.12", "time": 0.175 }
                         ]
                       }
                     ]
