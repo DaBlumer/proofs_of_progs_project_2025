@@ -771,7 +771,6 @@ module Skel
     let op = { V.ur=(fun x -> x*.x*.x); V.uq=(fun q -> V.(q*q*q))} in
     op_si op u
 
-  (* TODO : talk about val neg in report *)
   let neg (u : u) : u
     ensures { forall x. mem x u <-> mem (0.0 -. x) result }
   =

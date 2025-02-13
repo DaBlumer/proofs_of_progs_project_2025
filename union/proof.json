@@ -185,7 +185,7 @@
           {
             "tactic": "split_goal_full",
             "children": [
-              { "prover": "cvc5@1.1.2", "time": 0.132 },
+              { "prover": "cvc4@1.8", "time": 0.534 },
               { "prover": "cvc5@1.1.2", "time": 0.743 },
               { "prover": "alt-ergo@2.6.0", "time": 0.043 },
               { "prover": "alt-ergo@2.6.0", "time": 0.041 },
@@ -210,7 +210,50 @@
                       {
                         "tactic": "split_all_full",
                         "children": [
-                          { "prover": "z3@4.8.12", "time": 1.4 }
+                          {
+                            "tactic": "inline_goal",
+                            "children": [
+                              {
+                                "tactic": "inline_goal",
+                                "children": [
+                                  {
+                                    "tactic": "split_goal_full",
+                                    "children": [
+                                      { "prover": "z3@4.8.12", "time": 0.22 },
+                                      {
+                                        "prover": "alt-ergo@2.6.0",
+                                        "time": 0.157
+                                      },
+                                      {
+                                        "tactic": "inline_goal",
+                                        "children": [
+                                          {
+                                            "tactic": "inline_goal",
+                                            "children": [
+                                              {
+                                                "tactic": "split_vc",
+                                                "children": [
+                                                  {
+                                                    "tactic": "inline_goal",
+                                                    "children": [
+                                                      {
+                                                        "prover": "z3@4.8.12",
+                                                        "time": 0.383
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
                         ]
                       }
                     ]
