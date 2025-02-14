@@ -295,7 +295,7 @@ module BoundUnion
   type bound_union = {
      a : array bound_interval
   } invariant {
-    forall j. 0 <= j < a.length - 1 -> before_interval a[j] a[j+1]
+    forall j. 0 <= j < a.length - 1 -> a[j] << a[j+1]
   }
 
   type lax_bound_union = {

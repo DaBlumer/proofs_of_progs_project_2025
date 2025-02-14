@@ -70,13 +70,6 @@ module Skel
      /\ unique_repr_of_all unbound_down unbound_up bu
   }
 
-  (* just some unsound placeholders *)
-  predicate _fmla
-  val _code () : u
-    ensures { false }
-  val _codeb () : bool
-    ensures { false }
-
   let x : real = 1.0
 
   predicate mem_unbound_down (x:real) (l : option V.t)

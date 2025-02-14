@@ -37,194 +37,28 @@
       "clo_opn_mk": { "prover": "alt-ergo@2.6.0", "time": 0.029 },
       "diam_interval_pos": { "prover": "alt-ergo@2.6.0", "time": 0.023 },
       "end_after_interval": { "prover": "alt-ergo@2.6.0", "time": 0.033 },
-      "except_interval_border": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.026 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.026 },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.018 },
-                  { "prover": "alt-ergo@2.6.0", "time": 0.03 }
-                ]
-              },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-                  { "prover": "alt-ergo@2.6.0", "time": 0.038 }
-                ]
-              }
-            ]
-          }
-        ]
-      },
+      "except_interval_border": { "prover": "alt-ergo@2.6.0", "time": 0.039 },
       "except_interval_inside": { "prover": "alt-ergo@2.6.0", "time": 0.069 },
       "fuse_union_comp_order": { "prover": "alt-ergo@2.6.0", "time": 0.03 },
       "fuse_union_comp_order'": { "prover": "alt-ergo@2.6.0", "time": 0.062 },
       "incl_interval": { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-      "incl_interval_charac": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "cvc4@1.8", "time": 0.053 },
-          { "prover": "z3@4.8.12", "time": 0.037 }
-        ]
-      },
+      "incl_interval_charac": { "prover": "cvc4@1.8", "time": 0.061 },
       "incl_interval_ext": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
           { "prover": "z3@4.8.12", "time": 0.04 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.027 }
         ]
       },
-      "inter_intervals": {
-        "tactic": "split_vc",
-        "children": [
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "z3@4.8.12", "time": 0.038 },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.028 },
-                      { "prover": "alt-ergo@2.6.0", "time": 0.191 }
-                    ]
-                  },
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.177 },
-                      { "prover": "alt-ergo@2.6.0", "time": 0.026 }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "tactic": "split_vc",
-            "children": [
-              {
-                "tactic": "split_vc",
-                "children": [
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.063 },
-                      { "prover": "alt-ergo@2.6.0", "time": 0.05 }
-                    ]
-                  },
-                  { "prover": "alt-ergo@2.6.0", "time": 0.055 }
-                ]
-              },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "z3@4.8.12", "time": 0.037 },
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.066 },
-                      { "prover": "z3@4.8.12", "time": 0.067 }
-                    ]
-                  }
-                ]
-              },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.022 },
-                      { "prover": "alt-ergo@2.6.0", "time": 0.05 }
-                    ]
-                  },
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.094 },
-                      { "prover": "alt-ergo@2.6.0", "time": 0.027 }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          { "prover": "alt-ergo@2.6.0", "time": 0.021 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.044 },
-                  { "prover": "alt-ergo@2.6.0", "time": 0.034 }
-                ]
-              },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.026 },
-                  { "prover": "alt-ergo@2.6.0", "time": 0.036 }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "inter_intervals_comm": {
-        "tactic": "split_vc",
-        "children": [
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.593 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.607 },
-              { "prover": "cvc4@1.8", "time": 0.096 }
-            ]
-          }
-        ]
-      },
-      "interval_r_nonempy": {
-        "tactic": "split_vc",
-        "children": [ { "prover": "cvc4@1.8", "time": 0.014 } ]
-      },
+      "inter_intervals": { "prover": "z3@4.8.12", "time": 0.127 },
+      "inter_intervals_comm": { "prover": "z3@4.8.12", "time": 0.16 },
+      "interval_r_nonempy": { "prover": "cvc4@1.8", "time": 0.017 },
       "lax_before_interval": { "prover": "alt-ergo@2.6.0", "time": 0.034 },
       "mem_interval": { "prover": "alt-ergo@2.6.0", "time": 0.022 },
       "mem_interval_border": { "prover": "alt-ergo@2.6.0", "time": 0.029 },
       "mem_r_charac": { "prover": "alt-ergo@2.6.0", "time": 0.02 },
-      "merge_intervals": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.05 },
-          { "prover": "cvc5@1.1.2", "time": 0.704 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.026 },
-          { "prover": "z3@4.8.12", "time": 0.148 }
-        ]
-      },
-      "merge_intervals_comm": {
-        "tactic": "split_vc",
-        "children": [
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.109 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.044 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.042 }
-            ]
-          }
-        ]
-      },
+      "merge_intervals": { "prover": "cvc5@1.1.2", "time": 0.724 },
+      "merge_intervals_comm": { "prover": "z3@4.8.12", "time": 0.093 },
       "merge_union_comp_order": { "prover": "alt-ergo@2.6.0", "time": 0.034 },
       "merge_union_comp_order'": {
         "prover": "alt-ergo@2.6.0",
@@ -235,6 +69,7 @@
       "nends_before_starts": { "prover": "alt-ergo@2.6.0", "time": 0.033 },
       "nends_comm": { "prover": "cvc5@1.1.2", "time": 0.107 },
       "opn_clo_mk": { "prover": "alt-ergo@2.6.0", "time": 0.027 },
+      "opn_opn_mk": { "prover": "alt-ergo@2.6.0", "time": 0.034 },
       "order_mix_trans": { "prover": "alt-ergo@2.6.0", "time": 0.032 },
       "r_after_interval": { "prover": "alt-ergo@2.6.0", "time": 0.042 },
       "r_before_after_mem": { "prover": "alt-ergo@2.6.0", "time": 0.041 },
@@ -249,212 +84,149 @@
       "append": { "prover": "alt-ergo@2.6.0", "time": 0.045 },
       "append_mem": { "prover": "alt-ergo@2.6.0", "time": 0.047 },
       "array_to_lax_bound_union": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.059 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.161 }
-        ]
+        "prover": "alt-ergo@2.6.0",
+        "time": 0.453
       },
       "bound_union": { "prover": "z3@4.8.12", "time": 0.063 },
       "bound_union_ext_aux": { "prover": "alt-ergo@2.6.0", "time": 0.045 },
       "bound_union_ext_aux'": { "prover": "z3@4.8.12", "time": 0.098 },
       "bound_union_ext_aux''": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.057 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
           { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.174 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.125 },
-          { "prover": "z3@4.8.12", "time": 0.238 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.169 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.153 },
+          { "prover": "z3@4.8.12", "time": 0.498 },
           { "prover": "alt-ergo@2.6.0", "time": 0.046 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.097 },
-          { "prover": "z3@4.8.12", "time": 0.112 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.058 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.074 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.141 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.039 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.046 },
-              { "prover": "z3@4.8.12", "time": 0.339 }
-            ]
-          },
           { "prover": "alt-ergo@2.6.0", "time": 0.044 },
-          { "prover": "cvc5@1.1.2", "time": 0.166 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.05 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.044 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.046 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.104 },
+          { "prover": "z3@4.8.12", "time": 0.345 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
+          { "prover": "cvc5@1.1.2", "time": 0.156 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
+          { "prover": "z3@4.8.12", "time": 0.456 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.058 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.055 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.039 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "z3@4.8.12", "time": 0.339 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 }
         ]
       },
       "bound_union_weak_eq": { "prover": "alt-ergo@2.6.0", "time": 0.042 },
       "bound_union_weak_ext": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.151 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.191 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.078 },
+          { "prover": "z3@4.8.12", "time": 0.142 },
+          { "prover": "z3@4.8.12", "time": 0.2 }
         ]
       },
       "ceil_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "cvc4@1.8", "time": 0.073 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.05 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.061 },
+          { "prover": "cvc4@1.8", "time": 0.132 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.065 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.073 }
         ]
       },
       "cube_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.263 },
-          { "prover": "z3@4.8.12", "time": 0.083 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.062 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.409 },
+          {
+            "tactic": "split_all_full",
+            "children": [
+              {
+                "tactic": "split_vc",
+                "children": [ { "prover": "z3@4.8.12", "time": 0.113 } ]
+              }
+            ]
+          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.085 }
         ]
       },
-      "disjoint_unions": {
-        "tactic": "split_vc",
-        "children": [ { "prover": "alt-ergo@2.6.0", "time": 0.097 } ]
-      },
+      "disjoint_unions": { "prover": "alt-ergo@2.6.0", "time": 0.109 },
       "empty_union": { "prover": "alt-ergo@2.6.0", "time": 0.045 },
       "ends_after_strict": { "prover": "alt-ergo@2.6.0", "time": 0.04 },
       "except_union": { "prover": "alt-ergo@2.6.0", "time": 0.044 },
       "floor_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
-          { "prover": "cvc4@1.8", "time": 0.075 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.039 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
+          { "prover": "cvc4@1.8", "time": 0.162 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.067 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.072 }
         ]
       },
       "gap_not_empty": { "prover": "alt-ergo@2.6.0", "time": 0.094 },
       "gap_not_empty'": { "prover": "alt-ergo@2.6.0", "time": 0.097 },
-      "gap_not_empty''": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.404 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.058 },
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.049 },
-                      { "prover": "alt-ergo@2.6.0", "time": 0.058 }
-                    ]
-                  }
-                ]
-              },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.035 },
-                  {
-                    "tactic": "split_vc",
-                    "children": [
-                      { "prover": "alt-ergo@2.6.0", "time": 0.064 },
-                      { "prover": "alt-ergo@2.6.0", "time": 0.068 }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
+      "gap_not_empty''": { "prover": "cvc4@1.8", "time": 0.279 },
       "gen_except_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.044 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.058 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.027 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.09 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.045 }
-            ]
-          },
-          { "prover": "cvc5@1.1.2", "time": 0.377 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.065 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.102 },
           { "prover": "alt-ergo@2.6.0", "time": 0.063 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.055 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.056 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.352 },
+          { "prover": "cvc5@1.1.2", "time": 0.44 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.08 },
           { "prover": "alt-ergo@2.6.0", "time": 0.033 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.062 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.045 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.257 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.049 }
-            ]
-          },
-          { "prover": "alt-ergo@2.6.0", "time": 0.153 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.032 }
-            ]
-          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.059 },
           { "prover": "alt-ergo@2.6.0", "time": 0.038 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
-          { "prover": "cvc4@1.8", "time": 0.38 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.467 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "cvc4@1.8", "time": 0.085 },
-          { "prover": "cvc5@1.1.2", "time": 0.09 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.444 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.19 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.069 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.058 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.067 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.059 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.046 },
+          { "prover": "cvc4@1.8", "time": 0.284 },
+          { "prover": "cvc5@1.1.2", "time": 0.387 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.083 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.068 }
         ]
       },
       "gen_inter_interval": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.051 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.072 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.028 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "cvc5@1.1.2", "time": 0.431 },
-          { "prover": "z3@4.8.12", "time": 0.027 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "cvc4@1.8", "time": 0.09 },
-              { "prover": "cvc4@1.8", "time": 0.09 }
-            ]
-          },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "cvc4@1.8", "time": 0.35 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.045 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.197 }
-            ]
-          },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.053 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.235 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.162 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.055 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.071 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.044 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "cvc5@1.1.2", "time": 0.341 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.05 },
+          { "prover": "cvc4@1.8", "time": 0.322 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.151 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.124 }
         ]
       },
       "gen_mem_sub_union": { "prover": "alt-ergo@2.6.0", "time": 0.164 },
@@ -462,132 +234,178 @@
       "help": { "prover": "alt-ergo@2.6.0", "time": 0.035 },
       "help'": { "prover": "alt-ergo@2.6.0", "time": 0.048 },
       "help''": { "prover": "z3@4.8.12", "time": 0.076 },
-      "inbetween_ordered_intervals": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "z3@4.8.12", "time": 0.104 },
-          { "prover": "z3@4.8.12", "time": 0.119 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.091 }
-        ]
-      },
+      "inbetween_ordered_intervals": { "prover": "z3@4.8.12", "time": 0.903 },
       "incl_interval_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.054 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.287 },
-          { "prover": "z3@4.8.12", "time": 0.182 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.589 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.266 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "z3@4.8.12", "time": 0.116 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.178 }
-            ]
-          },
-          { "prover": "cvc5@1.1.2", "time": 0.261 },
           { "prover": "alt-ergo@2.6.0", "time": 0.053 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.107 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.068 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.068 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.054 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.051 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.046 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.05 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.06 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.051 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.065 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.053 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.047 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.05 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.055 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.044 },
+          { "prover": "z3@4.8.12", "time": 0.196 },
+          { "prover": "cvc5@1.1.2", "time": 0.346 },
+          { "prover": "cvc5@1.1.2", "time": 0.271 },
           { "prover": "alt-ergo@2.6.0", "time": 0.049 },
-          { "prover": "cvc4@1.8", "time": 0.59 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.089 },
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.068 },
-                  { "prover": "cvc5@1.1.2", "time": 0.396 }
-                ]
-              }
-            ]
-          },
-          { "prover": "alt-ergo@2.6.0", "time": 0.142 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.057 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.098 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.053 },
+          { "prover": "cvc4@1.8", "time": 0.439 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.053 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.046 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.096 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.087 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.064 },
+          { "prover": "cvc5@1.1.2", "time": 0.282 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.11 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "z3@4.8.12", "time": 0.146 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.164 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.095 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.056 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.073 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.095 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.039 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.045 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.039 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.045 }
         ]
       },
       "incl_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.028 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.053 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.059 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.687 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.044 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.051 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.159 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.103 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+          { "prover": "cvc4@1.8", "time": 0.144 },
           {
-            "tactic": "split_vc",
+            "tactic": "split_goal_full",
             "children": [
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 0.033 },
-                  { "prover": "alt-ergo@2.6.0", "time": 0.039 }
-                ]
-              },
-              { "prover": "alt-ergo@2.6.0", "time": 0.046 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.043 }
+              { "prover": "alt-ergo@2.6.0", "time": 0.051 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.05 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.049 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.074 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.052 }
             ]
           }
         ]
       },
       "inter_interval": { "prover": "alt-ergo@2.6.0", "time": 0.038 },
       "inter_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.056 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.054 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.034 }
-            ]
-          },
-          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.265 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.091 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.034 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.055 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.378 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.143 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 }
         ]
       },
       "lax_add_interval": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
           { "prover": "alt-ergo@2.6.0", "time": 0.038 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.093 },
           {
-            "tactic": "split_vc",
+            "tactic": "split_goal_full",
             "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.042 }
+              { "prover": "alt-ergo@2.6.0", "time": 0.112 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.106 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.075 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.044 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.055 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.046 },
+              {
+                "tactic": "split_all_full",
+                "children": [ { "prover": "alt-ergo@2.6.0", "time": 0.918 } ]
+              },
+              { "prover": "cvc4@1.8", "time": 0.249 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.101 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.046 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.055 }
             ]
           },
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.076 },
-          {
-            "tactic": "split_vc",
-            "children": [
-              {
-                "tactic": "split_vc",
-                "children": [
-                  { "prover": "alt-ergo@2.6.0", "time": 1.7 },
-                  { "prover": "cvc5@1.1.2", "time": 0.492 }
-                ]
-              },
-              { "prover": "z3@4.8.12", "time": 0.293 }
-            ]
-          }
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
+          { "prover": "z3@4.8.12", "time": 0.646 }
         ]
       },
       "lax_all_before": { "prover": "alt-ergo@2.6.0", "time": 0.074 },
@@ -598,185 +416,135 @@
       },
       "lax_inj": { "prover": "alt-ergo@2.6.0", "time": 0.109 },
       "lax_merge": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
           { "prover": "alt-ergo@2.6.0", "time": 0.048 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
-          { "prover": "cvc4@1.8", "time": 0.239 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.038 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.237 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
           {
-            "tactic": "split_vc",
+            "tactic": "split_goal_full",
             "children": [
-              { "prover": "cvc4@1.8", "time": 0.286 },
-              { "prover": "cvc5@1.1.2", "time": 0.39 }
+              { "prover": "cvc4@1.8", "time": 0.259 },
+              { "prover": "cvc5@1.1.2", "time": 0.351 }
             ]
           },
-          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
-          { "prover": "cvc4@1.8", "time": 0.146 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.056 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.039 }
         ]
       },
-      "lax_to_strict": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.026 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.077 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.027 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.06 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.032 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.045 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.067 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.151 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.055 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.062 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.038 }
-        ]
-      },
-      "lax_union_union": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.05 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.122 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.035 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.033 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.059 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.134 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.063 }
-        ]
-      },
+      "lax_to_strict": { "prover": "alt-ergo@2.6.0", "time": 0.665 },
+      "lax_union_union": { "prover": "alt-ergo@2.6.0", "time": 0.373 },
       "mem_union_unique": { "prover": "z3@4.8.12", "time": 0.109 },
       "mk_1_union": { "prover": "alt-ergo@2.6.0", "time": 0.077 },
       "mul_cst_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.04 },
-          { "prover": "z3@4.8.12", "time": 0.077 },
-          { "prover": "z3@4.8.12", "time": 0.093 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.078 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.043 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.054 },
+          {
+            "tactic": "split_all_full",
+            "children": [
+              {
+                "tactic": "split_vc",
+                "children": [
+                  {
+                    "tactic": "inline_goal",
+                    "children": [
+                      {
+                        "tactic": "split_vc",
+                        "children": [
+                          { "prover": "z3@4.8.12", "time": 0.175 }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "prover": "z3@4.8.12", "time": 0.427 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.061 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.054 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.088 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.067 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.082 }
         ]
       },
       "neg_union": { "prover": "alt-ergo@2.6.0", "time": 0.041 },
       "not_empty_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "cvc5@1.1.2", "time": 1.2 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.14 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.367 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.156 }
         ]
       },
-      "op_nsi_interval": {
-        "tactic": "split_vc",
-        "children": [
-          {
-            "tactic": "split_vc",
-            "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.036 },
-              { "prover": "alt-ergo@2.6.0", "time": 0.037 }
-            ]
-          },
-          { "prover": "alt-ergo@2.6.0", "time": 0.048 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.061 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.029 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.03 }
-        ]
-      },
-      "op_nsi_interval_order": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.093 },
-          { "prover": "z3@4.8.12", "time": 0.09 }
-        ]
-      },
-      "op_nsi_union": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.037 },
-          { "prover": "cvc4@1.8", "time": 0.165 },
-          { "prover": "cvc5@1.1.2", "time": 0.144 }
-        ]
-      },
-      "op_sd_interval": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.044 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.076 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.041 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.034 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.049 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.033 }
-        ]
-      },
+      "op_nsi_interval": { "prover": "alt-ergo@2.6.0", "time": 0.065 },
+      "op_nsi_interval_order": { "prover": "z3@4.8.12", "time": 0.162 },
+      "op_nsi_union": { "prover": "alt-ergo@2.6.0", "time": 0.97 },
+      "op_sd_interval": { "prover": "alt-ergo@2.6.0", "time": 0.08 },
       "op_sd_interval_order": { "prover": "z3@4.8.12", "time": 0.146 },
       "op_sd_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.045 },
-          { "prover": "cvc4@1.8", "time": 0.131 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.064 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.149 },
           {
-            "tactic": "split_vc",
+            "tactic": "split_goal_full",
             "children": [
-              { "prover": "alt-ergo@2.6.0", "time": 0.585 },
-              { "prover": "cvc4@1.8", "time": 0.524 }
+              { "prover": "cvc5@1.1.2", "time": 0.229 },
+              { "prover": "cvc4@1.8", "time": 0.523 }
             ]
           }
         ]
       },
-      "op_sd_union_aux": {
-        "tactic": "split_vc",
-        "children": [
-          { "prover": "cvc5@1.1.2", "time": 0.258 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.041 }
-        ]
-      },
+      "op_sd_union_aux": { "prover": "z3@4.8.12", "time": 0.496 },
       "op_si_interval": { "prover": "alt-ergo@2.6.0", "time": 0.074 },
       "op_si_interval_order": { "prover": "z3@4.8.12", "time": 0.188 },
       "op_si_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.031 },
-          { "prover": "z3@4.8.12", "time": 0.583 },
-          { "prover": "alt-ergo@2.6.0", "time": 1.4 },
           { "prover": "alt-ergo@2.6.0", "time": 0.047 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.038 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.124 },
+          {
+            "tactic": "split_goal_full",
+            "children": [
+              { "prover": "cvc5@1.1.2", "time": 0.168 },
+              { "prover": "cvc5@1.1.2", "time": 0.185 }
+            ]
+          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.096 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.106 }
         ]
       },
       "outside_ordered_intervals": { "prover": "z3@4.8.12", "time": 0.195 },
-      "relating_orders": { "prover": "cvc5@1.1.2", "time": 0.935 },
+      "relating_orders": {
+        "tactic": "split_goal_full",
+        "children": [
+          {
+            "tactic": "split_goal_full",
+            "children": [
+              { "prover": "cvc5@1.1.2", "time": 0.955 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.04 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.221 }
+            ]
+          }
+        ]
+      },
       "relu_union": { "prover": "alt-ergo@2.6.0", "time": 0.045 },
       "replace_mem_union": { "prover": "alt-ergo@2.6.0", "time": 0.277 },
       "singleton_union": { "prover": "alt-ergo@2.6.0", "time": 0.066 },
       "starts_before_strict": { "prover": "alt-ergo@2.6.0", "time": 0.038 },
       "truncate_union": {
-        "tactic": "split_vc",
+        "tactic": "split_goal_full",
         "children": [
-          { "prover": "alt-ergo@2.6.0", "time": 0.042 },
-          { "prover": "cvc4@1.8", "time": 0.09 },
-          { "prover": "alt-ergo@2.6.0", "time": 0.052 },
-          { "prover": "cvc5@1.1.2", "time": 0.066 }
+          { "prover": "alt-ergo@2.6.0", "time": 0.068 },
+          { "prover": "cvc4@1.8", "time": 0.133 },
+          { "prover": "alt-ergo@2.6.0", "time": 0.08 },
+          { "prover": "cvc5@1.1.2", "time": 0.108 }
         ]
       },
       "union_inf": { "prover": "alt-ergo@2.6.0", "time": 0.029 },

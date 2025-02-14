@@ -3,13 +3,6 @@ module Intf
 
     type t
 
-    (*
-      Adding an "axiom" stating that t is not empty for type variant purposes.
-      This should be reasonable as we are trying to represent a field with the
-      type t and so should always have the 0 and 1 representatives.
-    *)
-    val non_empty : t
-
     function real (q:t) : real    meta coercion function real
 
     predicate equal (a b:t) = (a.real = b.real)
@@ -52,6 +45,8 @@ module Intf
     val truncate (a:t) : int ensures { result = truncate a.real }
     val floor (a:t) : int ensures { result = floor a.real }
     val ceil (a:t) : int ensures { result = ceil a.real }
+
+    let non_empty = of_int 0
 
     type op = {
       ghost ur: real -> real;
