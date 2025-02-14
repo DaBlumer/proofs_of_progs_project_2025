@@ -1,0 +1,4 @@
+  predicate mem_r_interval (e : real) (i : bound_interval) =
+       i.lower.V.real <. e <. i.upper.V.real
+    \/ (i.lower_closed /\ e = i.lower.V.real)
+    \/ (i.upper_closed /\ e = i.upper.V.real)

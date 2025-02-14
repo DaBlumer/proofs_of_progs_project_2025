@@ -1,0 +1,11 @@
+let predicate bound_unbound_disj_up (uup : option V.t) (bu : bound_union)
+  = any bool ensures { result <-> (
+     bu.a.length > 0 ->
+       let i = bu.a.length - 1 in
+       match uup with
+       | None -> true
+       | Some x -> V.(union_sup bu < x \/
+                     (x = union_sup bu /\ not bu.a[i].upper_closed)
+                     \/ (x = union_sup bu /\ (bu.a[i].upper=bu.a[i].lower)))
+       end
+     )}

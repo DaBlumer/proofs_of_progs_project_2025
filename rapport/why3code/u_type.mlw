@@ -1,0 +1,9 @@
+  type u = {
+    unbound_down : option V.t;
+    unbound_up : option V.t;
+    bu : bound_union
+  } invariant {
+        bound_unbound_disj unbound_down unbound_up bu
+     /\ unbound_unbound_disj unbound_down unbound_up bu
+     /\ unique_repr_of_all unbound_down unbound_up bu
+  }

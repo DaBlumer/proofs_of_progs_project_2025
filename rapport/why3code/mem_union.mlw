@@ -1,0 +1,4 @@
+  predicate gen_mem_union (x:real) (a:array bound_interval) =
+    exists j. 0 <= j < a.length /\ mem_r_interval x a[j]
+  predicate mem_union (x:real) (bu : bound_union) =
+    gen_mem_union x bu.a

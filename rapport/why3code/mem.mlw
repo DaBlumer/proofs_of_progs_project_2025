@@ -1,0 +1,9 @@
+  predicate untyped_mem (x : real) (unbound_down unbound_up : option V.t)
+                                   (bu : bound_union)
+  =
+       mem_unbound_down x unbound_down
+    \/ mem_unbound_up x unbound_up
+    \/ mem_union x bu
+
+  predicate mem (x:real) (l:u)
+  = untyped_mem x l.unbound_down l.unbound_up l.bu
