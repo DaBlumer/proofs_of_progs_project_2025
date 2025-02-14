@@ -1,0 +1,7 @@
+  let predicate before_interval (i j : bound_interval)
+  = any bool ensures {
+      result <-> V.(i.upper < j.lower
+      \/
+      (i.upper = j.lower /\ not i.upper_closed /\ not j.lower_closed))
+    }
+  let predicate (<<) = before_interval

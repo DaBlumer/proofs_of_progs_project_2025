@@ -1,0 +1,82 @@
+\section{Question 1. Data structures}
+
+For the data structures, I chose to define them in multiple levels, and lift the
+operations at each step. I have thus defined:
+%
+\begin{enumerate}
+  \item The type of (non-empty) bound intervals.
+  %
+  \item The type of finite unions of bound intervals.
+  %
+  \item The type u of possibly unbound finite union of intervals.
+\end{enumerate}
+%
+At each step, the rationale was to define each of these objects with invariants that
+guarantee a unique representation for a given mathematical set.
+%
+
+\subsection{The type of bound intervals}
+Here is the type of (bound, non-empty) intervals:
+\inputminted{\whyml}{why3code/interval_type.mlw}
+%
+It represents sets of the form
+$\{ x ~|~ \texttt{lower\_bound}~\diamondsuit~x~\diamondsuit'~\texttt{upper\_bound} \}$
+with
+$\texttt{lower\_bound}, \texttt{upper\_bound} \in V$ and
+$\diamondsuit, \diamondsuit' \in \{ \le, < \}$.
+%
+The invariant imposes that $\texttt{lower\_bound} \le \texttt{upper\_bound}$,
+%
+and that if they are equal, the interval is closed on both sides and thus represents
+a singleton. These two constraints allow us to have no representation for the empty
+set, which will be handled by the union layer.
+%
+The \mintinline{\whyml}{not_empty} is defined in \textit{field.mlw} as
+\mintinline{\whyml}{of\_int 0} for convenience.
+
+\subsection{The type of unions of bound intervals}
+
+At the pure data level, I chose to represent the union as arrays of intervals, that
+is as the \mintinline{\whyml}{array interval} type.
+%
+The actual choice here was to have a sequential data structure, and using
+arrays over algebraic lists was simply motivated by the fact that I found it more
+convenient to manipulate indexes with universal quantifiers in my lemmas and predicates.
+%
+The actually defined data structure is enriched with invariants guaranteeing the
+unique representation of a given set:
+%
+\inputminted{\whyml}{why3code/bound_union_type.mlw}
+The \minline{(<<)} operates over intervals and is defined as follows:
+%
+\inputminted{\whyml}{why3code/before_interval_pred.mlw}
+%
+The \minline{any} is used here (and in any future use of it) to specify that this
+predicate is computable.
+%
+It is a strict partial order, and imposing for unions of intervals to be strictly
+ordered by it guarantees unicity by way of the following two properties that hold for
+any indices $0 <= i < j < length a$:
+%
+\begin{itemize}
+  \item $\gamma(a_i) \cap \gamma(a_j) = \emptyset$.
+  \item $\gamma(a_i) \cap \gamma(a_j)$ is \textbf{not} an interval.
+\end{itemize}
+
+
+
+\begin{itemize}
+    \item arrays of intervals, sorted by their lower bounds
+  \item finally, the type u is constituted of one bound union of disjoint intervals,
+    plus two optional V.t values representing the starts of unbound intervals at both
+    sides. We also require the invariant that the unbounded intervals, if present,
+    are disjoint from the bound union, which allow again to have a unique
+    representation for equal objects.
+\end{itemize}
+
+
+%
+This added constraint may look unnecessarily cumbersome since it is not necessary at
+all for the implementation and specification of the union and intersection
+operations, but it will prove very useful for computing the inclusion and except
+operators.

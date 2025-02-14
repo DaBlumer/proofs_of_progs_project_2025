@@ -1,0 +1,9 @@
+  type bound_interval = {
+    lower : V.t;
+    upper : V.t;
+    lower_closed : bool;
+    upper_closed : bool
+  } invariant {
+      V.(<=) lower upper /\
+      (V.(<) lower upper \/ (lower_closed /\ upper_closed))
+  } by { lower=V.non_empty; upper=V.non_empty; lower_closed=true; upper_closed=true }

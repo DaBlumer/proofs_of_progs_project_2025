@@ -1,0 +1,10 @@
+_aux/
+*.aux
+*.out
+*.bcf
+*.fls
+*.log
+*.pdf
+*.xml
+*.gz
+_minted/
