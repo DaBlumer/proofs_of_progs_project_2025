@@ -1,3 +1,5 @@
-custom_lexers = {
-   "why3.py" : "dc5065d9fd07d2297354fccc4a118f213b78997ef4796493066011a5ab88bca0"
+{
+"custom_lexers" : {
+   "why3.py" : "7a12261d27fb2f1c37ef4287d211bfec172aa4d23a94259b3b30f071472aae73"
+}
 }

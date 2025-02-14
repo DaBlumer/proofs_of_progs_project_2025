@@ -34,6 +34,10 @@ set, which will be handled by the union layer.
 The \mintinline{\whyml}{not_empty} is defined in \textit{field.mlw} as
 \mintinline{\whyml}{of\_int 0} for convenience.
 
+Some examples of valid intervals are $[1, 5]$, $[-3, 0[$ or $[2,2]$. Some
+examples of invalid intervals are $[3, 2[$ or $[1,1[$.
+
+
 \subsection{The type of unions of bound intervals}
 
 At the pure data level, I chose to represent the union as arrays of intervals, that
@@ -55,28 +59,42 @@ The \minline{any} is used here (and in any future use of it) to specify that thi
 predicate is computable.
 %
 It is a strict partial order, and imposing for unions of intervals to be strictly
-ordered by it guarantees unicity by way of the following two properties that hold for
-any indices $0 <= i < j < length a$:
+ordered by it guarantees unicity by way of the following property: for any distinct
+indices $0 \le i \neq j < \texttt{length } a$, the set $\gamma(a_i) \cup \gamma(a_j)$
+is \textbf{not} an interval.
+
+For example, $[[1, 2[,~]2, 4],~[5, 5]]$ is a valid union, and both
+$[[1, 2[,~[2, 3]]$ and $[[1, 2],~[1.5, 3]$ are not valid unions because we
+can fuse the two composing intervals into one, and $[[1, 1],~[0,0]$ is not valid
+because it is not increasing.
+
+
+\subsection{The type of general unions of intervals}
+Finally, the type \minline{u} is a triple representing a union of bound intervals
+with two optional numbers (of type \minline{option V.t}) encoding possible
+upwards/downwards \textbf{open} unbound intervals, together with four invariants.
 %
-\begin{itemize}
-  \item $\gamma(a_i) \cap \gamma(a_j) = \emptyset$.
-  \item $\gamma(a_i) \cap \gamma(a_j)$ is \textbf{not} an interval.
-\end{itemize}
-
-
-
-\begin{itemize}
-    \item arrays of intervals, sorted by their lower bounds
-  \item finally, the type u is constituted of one bound union of disjoint intervals,
-    plus two optional V.t values representing the starts of unbound intervals at both
-    sides. We also require the invariant that the unbounded intervals, if present,
-    are disjoint from the bound union, which allow again to have a unique
-    representation for equal objects.
-\end{itemize}
-
-
+\inputminted{\whyml}{why3code/u_type.mlw}
 %
-This added constraint may look unnecessarily cumbersome since it is not necessary at
+The first invariant \minline{bound_unbound_disj}, combined with the fact that the
+unbound parts are implicitly open, guarantees that that the optional unbound
+intervals cannot be merged with an element of \minline{bu} into a single interval.
+The second one \minline{unbound_unbound_disj} ensures that the two unbound intervals
+are always disjoint. Here is one part of the \minline{bound_unbound_disj} predicate.
+%
+\inputminted{\whyml}{why3code/bound_unbound_disj_pred.mlw}
+%
+These two constraints allow us to have a unique representation of all sets except the
+set of all elements $\mathbb{R}$, whiche can be represented by any triple of the
+form $(]-\inf, x[, [[x,x]], ]x, \inf[)$ for $x\in V.t$.
+%
+We add the final ad-hoc invariant \minline{unique_repr_of_all} which ensures that in
+that case, we have $x = 0$.
+
+These added constraints may look unnecessarily cumbersome since it is not necessary at
 all for the implementation and specification of the union and intersection
 operations, but it will prove very useful for computing the inclusion and except
 operators.
+%
+Note that all the predicates that are used in type invariants are
+computational.
