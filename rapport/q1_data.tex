@@ -8,7 +8,7 @@ operations at each step. I have thus defined:
   %
   \item The type of finite unions of bound intervals.
   %
-  \item The type u of possibly unbound finite union of intervals.
+  \item The type u of possibly unbound finite unions of intervals.
 \end{enumerate}
 %
 At each step, the rationale was to define each of these objects with invariants that
@@ -31,8 +31,8 @@ and that if they are equal, the interval is closed on both sides and thus repres
 a singleton. These two constraints allow us to have no representation for the empty
 set, which will be handled by the union layer.
 %
-The \mintinline{\whyml}{not_empty} is defined in \textit{field.mlw} as
-\mintinline{\whyml}{of\_int 0} for convenience.
+The \mintinline{\whyml}{not_empty} is defined in \textit{field.mlw} as the additive
+unit of $V$ (ie. \minline{of_int 0}) for convenience.
 
 Some examples of valid intervals are $[1, 5]$, $[-3, 0[$ or $[2,2]$. Some
 examples of invalid intervals are $[3, 2[$ or $[1,1[$.
@@ -55,23 +55,23 @@ The \minline{(<<)} operates over intervals and is defined as follows:
 %
 \inputminted{\whyml}{why3code/before_interval_pred.mlw}
 %
-The \minline{any} is used here (and in any future use of it) to specify that this
-predicate is computable.
+The \minline{any} construct is used here (and in any future use of it) to provide in
+one expression the specification and the actual computation of the predicate.
 %
-It is a strict partial order, and imposing for unions of intervals to be strictly
-ordered by it guarantees unicity by way of the following property: for any distinct
-indices $0 \le i \neq j < \texttt{length } a$, the set $\gamma(a_i) \cup \gamma(a_j)$
-is \textbf{not} an interval.
+\minline{(<<)} is a strict partial order, and imposing for unions of intervals to be
+strictly ordered by it guarantees unicity by way of the following property it
+induces: for any distinct indices $0 \le i, j < |a|$, the set
+$\gamma(a_i) \cup \gamma(a_j)$ is \textbf{not} an interval.
 
 For example, $[[1, 2[,~]2, 4],~[5, 5]]$ is a valid union, and both
 $[[1, 2[,~[2, 3]]$ and $[[1, 2],~[1.5, 3]$ are not valid unions because we
-can fuse the two composing intervals into one, and $[[1, 1],~[0,0]$ is not valid
-because it is not increasing.
+can fuse the two composing intervals into one, and $[[1, 1],~[0,0]]$ is not valid
+because it is not increasing w.r.t \minline{(<<)}.
 
 \subsection{The type of general unions of intervals}
 Finally, the type \minline{u} is a triple representing a union of bound intervals
 with two optional numbers (of type \minline{option V.t}) encoding possible
-upwards/downwards \textbf{open} unbound intervals, together with four invariants.
+upwards/downwards \textbf{open} unbound intervals, together with three invariants.
 %
 \inputminted{\whyml}{why3code/u_type.mlw}
 %

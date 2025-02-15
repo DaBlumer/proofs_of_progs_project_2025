@@ -12,8 +12,9 @@ This gives us these three straightforward definitions:
 \inputminted{\whyml}{why3code/simple_ones.mlw}
 
 Here \minline{singleton_union()} returns an array on length one, containing the
-interval $[q,q]$. These are proved automatically as is, although the actual
-definition of singleton contains some assertions that make the proof quicker.
+interval $[q,q]$, and \minline{empty_union()} returns an empty array. These are
+proved automatically as is, although the actual definition of singleton contains some
+assertions that make the proof quicker.
 
 I also defined other useful functions such as \minline{lt}, \minline{le} and
 \minline{empty_u} in an analogous way, and \minline{all_u} which is such that

@@ -6,7 +6,7 @@ and more convenient,
 %
 and the result is then transformed into the (unique) equivalent one that satisfies
 the invariants. I expand on the specification and proof of the transformations in my
-answer of questions 9-10, as those are the main motivation for working with the
+answer of questions 9-11, as those are the main motivation for working with the
 structures with invariants despite the union and intersection being implemented
 without them.
 
@@ -23,8 +23,9 @@ replace function here is a generic array operation I defined in the \minline{Arr
 module, and which specifies that the result is the first array where a part of it
 (delimited by the third and fourth arguments) is replaced by the second array.
 %
-It is equipped with the following lemma, which guarantees that
-$\gamma($\minline{replace a a' i }$) = (\gamma(a) \cup$
+I use it instead of the \minline{Array.append} function because it is equipped with
+the following lemma, which I everywhere I manipulate arrays of intervals, and which
+guarantees that $\gamma($\minline{replace a a' i }$) = (\gamma(a) \cup$
 $\gamma(a'))\setminus\gamma(a[i,...,j-1])$:
 \inputminted{\whyml}{why3code/replace_lemma.mlw}
 
@@ -36,9 +37,8 @@ Here is the signature of the two conversion functions, capturing that we preserv
 same notion of concrezitation to a set throughout the conversions:
 \inputminted{\whyml}{why3code/bound_convs_contracts.mlw}
 
-The implementation and proof of these functions, and the definition of the
-\minline{lax_bound_union} intermediate type is described as the computational part of
-questions 9-10.
+The implementation and proof of these functions, and the \minline{lax_bound_union}
+intermediate type is described as the computational part of questions 9-10.
 
 \subsection{The general union level}
 

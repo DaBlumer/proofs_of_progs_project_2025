@@ -22,20 +22,23 @@ $$
 %
 Which gives the implementation: \inputminted{\whyml}{why3code/inter_union.mlw} The
 function \minline{inter_interval} takes a union and an interval and computes their
-intersection, that is it computes $A_i \cap \bigcup_{j=0}{|B|-1}^{B_j}$. This
-guarantees the correctness of the loop invariant which ensures that at each step, the
+intersection, that is it computes $A_i \cap \bigcup_{j=0}^{|B|-1}{B_j}$. This
+guarantees the preservation of the loop invariant which ensures that at each step, the
 result variable is equal to
 %
 $\bigcup_{i'=0}^{i-1}{\left( A_i \cap \bigcup_{j=0}^{m-1}{B_j}\right)}$.
 %
-This invariant guarantees exactly the postcondition at loop exit.
+This invariant guarantees exactly the postcondition at loop exit, and it is initially
+correct as \minline{gen_mem_sub_union x bu'.a 0 0} checks if $x$ is in the empty
+subarray of bu'.a and returns \minline{false}, and so does \minline{mem_union x
+  result} with the initially empty \minline{result}.
 
 The \minline{inter_interval} function is implemented with the following formula in a
-similar war, modulo the conversion to ensure the \minline{bound_union} invariants.
+similar way (modulo the conversion to ensure the \minline{bound_union} invariants).
 $$
-\bigcup_{i=0}^{n-1}{\left( A_i \cap \bigcup_{j=0}^{m-1}{B_j}\right)}
+A \cap \bigcup_{j=0}^{m-1}{B_j}
 =
-\bigcup_{i=0}^{n-1}{\bigcup_{j=0}^{m-1}{\left(A_i \cap B_j\right)}}
+{\bigcup_{j=0}^{m-1}{\left(A \cap B_j\right)}}
 $$
 
 \subsection{The \minline{u} layer}
@@ -50,11 +53,11 @@ unbound interval:
 \inputminted{\whyml}{why3code/inter_up_bound.mlw}
 %
 We see that the loop is similar to the one in \minline{inter_union} as each step adds
-(applies the union) the result of the intersection of the unbound interval with the
+(applies the union to) the result of the intersection of the unbound interval with the
 next element of the \minline{bound_union}, maintaining the invariant.
 %
 The function computing the union between a bound interval and an unbound one,
-\minline{inter_up_interval}, is implemented in a straightforward way as:
+\minline{inter_up_interval}, is implemented in a straightforward way with:
 %
 \begin{align*}
   [a, b] \cap ]c, \infty] &=
@@ -64,8 +67,8 @@ The function computing the union between a bound interval and an unbound one,
     \emptyset & \text{otherwise}
   \end{cases}
 \end{align*}
-
-Finally, the implementation on the union of two \minline{u}s is:
+%
+Finally, the implementation on the intersection of two \minline{u} elements is:
 \inputminted{\whyml}{why3code/inter.mlw}
 
 

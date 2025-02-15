@@ -17,12 +17,13 @@ each interval of the union.
 %
 \inputminted{\whyml}{why3code/op_si.mlw}
 
-We do not specify the completeness as
-$\gamma(\text{op\_si}(\text{op}, u)) = \{\gamma(\text{op})(x)|x\in\gamma(u)\}$
-because this one is only true if the function is also continuous : it requires that
-for any $x < y$, op is surjective upon all of $[\text{op}(x), \text{op}(y)]$, which
-is not necessarily true: the function \minline{(fun x -> if x <. 0 then x else x +. 1)}
-is a counterexample.
+We do not specify the completeness as $\gamma(\text{op\_si}(\text{op}, u)) =
+\{\gamma(\text{op})(x)|x\in\gamma(u)\}$ because this one is only true if the function
+is also continuous : it requires that for any $x < y$, op is surjective upon all of
+$[\text{op}(x), \text{op}(y)]$, which is not necessarily true: the function
+f=\minline{(fun x -> if x <. 0 then x else x +. 1)} is a counterexample as
+$\gamma(f)(-1)=-1$ and $\gamma(f)(0)=1$ and (si $f$) holds but we have
+$\gamma(f)(z)\neq 0$ for $z \in [-1, 1]$.
 
 The implementation of the op\_sd operator is similar except we exchange the
 lower and upper bounds of the intervals, and we exchange the optional unbound two
