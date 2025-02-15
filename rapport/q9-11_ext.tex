@@ -56,7 +56,7 @@ bounds, then I transform this intermediate structure with the following function
 %
 
 This function operates on an array of intervals sorted by their lower bounds, and at
-each loop step with index $0\lei < |lbu.a|$, it can do two things:
+each loop step with index $0\le i < |lbu.a| - 1$, it can do one of two things:
 \begin{itemize}
   \item if the interval at $a_i$ occures strictly before $a_{i+1}$ (for example
     $[0,1] << [1.5,2]$), it advances by incrementing $i$, and by preserving the
