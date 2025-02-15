@@ -231,6 +231,20 @@
       },
       "gen_mem_sub_union": { "prover": "alt-ergo@2.6.0", "time": 0.164 },
       "gen_replace_mem_union": { "prover": "alt-ergo@2.6.0", "time": 0.361 },
+      "gen_union_union": {
+        "tactic": "split_vc",
+        "children": [
+          {
+            "tactic": "split_vc",
+            "children": [
+              { "prover": "alt-ergo@2.6.0", "time": 0.046 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.037 },
+              { "prover": "alt-ergo@2.6.0", "time": 0.043 }
+            ]
+          },
+          { "prover": "alt-ergo@2.6.0", "time": 0.112 }
+        ]
+      },
       "help": { "prover": "alt-ergo@2.6.0", "time": 0.035 },
       "help'": { "prover": "alt-ergo@2.6.0", "time": 0.048 },
       "help''": { "prover": "z3@4.8.12", "time": 0.076 },

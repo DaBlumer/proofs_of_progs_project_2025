@@ -1,0 +1,4 @@
+  let lemma replace_mem_union (x:real) (a new:array bound_interval) (i j:int)
+    requires { 0 <= i <= j <= length a }
+    requires { gen_mem_sub_union x a i j <-> gen_mem_union x new }
+    ensures { gen_mem_union x (replace a new i j) <-> gen_mem_union x a } = ()

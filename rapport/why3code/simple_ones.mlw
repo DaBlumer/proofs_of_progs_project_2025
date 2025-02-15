@@ -1,0 +1,17 @@
+  let function singleton (q:V.t) : u
+    ensures { forall x. mem x result <-> q.V.real = x }
+  =
+    {
+      unbound_down = None; unbound_up = None;
+      bu = singleton_union q
+    }
+
+  let function gt (q:V.t) : u
+    ensures { forall x. mem x result <-> x >. q.V.real }
+  =
+    {unbound_down = None; bu = empty_union(); unbound_up = Some q}
+
+  let ge (q:V.t) : u
+    ensures { forall x. mem x result <-> x >=. q.V.real }
+  =
+    {unbound_down=None;  bu = singleton_union q; unbound_up = Some q}

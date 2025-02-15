@@ -1,5 +1,4 @@
  predicate mem_unbound_down (x:real) (l : option V.t)
   = match l with None -> false | Some y -> x <. y.V.real end
-
  predicate mem_unbound_up (x:real) (r : option V.t)
   = match r with None -> false | Some y -> x >. y.V.real end

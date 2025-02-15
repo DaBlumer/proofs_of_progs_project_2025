@@ -1,0 +1,4 @@
+  let function all_u () : u
+    ensures { forall x. mem x result }
+  = V.{unbound_down=Some (of_int 0); unbound_up=Some (of_int 0);
+       bu=singleton_union (of_int 0) }

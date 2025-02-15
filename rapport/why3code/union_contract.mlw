@@ -1,0 +1,2 @@
+val union (u:u) (v:u) : u
+  ensures { forall x. mem x result <-> mem x u \/ mem x v }

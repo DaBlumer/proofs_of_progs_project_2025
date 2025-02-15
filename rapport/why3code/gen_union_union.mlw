@@ -1,0 +1,4 @@
+  let gen_union_union (a a' : array bound_interval) : array bound_interval
+    ensures { forall x. gen_mem_union x result
+                    <-> gen_mem_union x a \/ gen_mem_union x a' }
+  = replace a a' (length a) (length a)

@@ -1,0 +1,5 @@
+  let union_union (bu bu' : bound_union) : bound_union
+    ensures { forall x. mem_union x result
+                    <-> mem_union x bu \/ mem_union x bu' }
+  =
+    lax_to_strict (array_to_lax_bound_union (gen_union_union bu.a bu'.a))

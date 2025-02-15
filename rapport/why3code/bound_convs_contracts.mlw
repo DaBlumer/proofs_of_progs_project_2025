@@ -1,0 +1,4 @@
+  val array_to_lax_bound_union (a : array bound_interval) : lax_bound_union
+    ensures { forall x. gen_mem_union x a <-> lax_mem_union x result }
+  val lax_to_strict (lbu : lax_bound_union) : bound_union
+    ensures { forall x. mem_union x result <-> lax_mem_union x lbu }

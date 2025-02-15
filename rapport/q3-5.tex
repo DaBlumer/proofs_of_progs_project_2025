@@ -1,0 +1,22 @@
+\section{Questions 3 to 5: singleton, gt and ge}
+
+As we have seen in the presentation of the type definition of u, a singleton $\{x\}$
+can only be represented by a union containing a single interval $[x,x]$, and $gt$ is
+exactly an open unbound (towards $+\inf$) interval.
+%
+$ge$ is composed of an unbound
+part, and a singleton that is equal to the lower bound of the unbound part, which is
+allowed by the \minline{bound_unbound_disj_up} predicate to handle exactly this case.
+
+This gives us these three straightforward definitions:
+\inputminted{\whyml}{why3code/simple_ones.mlw}
+
+Here \minline{singleton_union()} returns an array on length one, containing the
+interval $[q,q]$. These are proved automatically as is, although the actual
+definition of singleton contains some assertions that make the proof quicker.
+
+I also defined other useful functions such as \minline{lt}, \minline{le} and
+\minline{empty_u} in an analogous way, and \minline{all_u} which is such that
+$\gamma($\minline{all_u}$) = \mathbb{R}$, which we made sure with the invariant can
+only be represented by the triple $(]-\inf, 0[, [[0,0]], ]0,\inf[)$:
+\inputminted{\whyml}{why3code/simple_all.mlw}

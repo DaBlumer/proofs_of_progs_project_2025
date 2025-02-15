@@ -1,12 +1,18 @@
 \section{Question 2: the mem predicate}
 
-I first define what it means to be part of a bound interval:
+I first define what it means to be part of a bound interval, which is either strictly
+inside of it or equal to one of the two bounds given it is closed:
+
 \inputminted{\whyml}{why3code/mem_interval.mlw}
 
-I then define what it means to be part of a union of bound intervals, and of one of
-the two unbound intervals:
+I then define what it means to be part of a union of bound intervals:
 \inputminted{\whyml}{why3code/mem_union.mlw}
+And what it means to be part of one of the two unbound optional parts:
 \inputminted{\whyml}{why3code/mem_unbound.mlw}
 
-Finally, I define the mem predicate:
+Finally, I define the mem predicate as being either in the bound part, or in one of
+the two unbound parts:
 \inputminted{\whyml}{why3code/mem.mlw}
+
+The addition of general inclusion predicates of the structures is justified in
+\autoref{q6}.

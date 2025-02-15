@@ -1,0 +1,65 @@
+\section{Question 7: Union}\label{q6}
+%
+The union is computed on two levels (bound unions, general unions).
+The pure data-structures are used for bound and general unions as they are sufficient
+and more convenient,
+%
+and the result is then transformed into the (unique) equivalent one that satisfies
+the invariants. I expand on the specification and proof of the transformations in my
+answer of questions 9-10, as those are the main motivation for working with the
+structures with invariants despite the union and intersection being implemented
+without them.
+
+
+\subsection{The bound-intervals union level}
+
+The implementation is made on arrays of intervals, and consists of simply appending
+the second union to the first.
+%
+\inputminted{\whyml}{why3code/gen_union_union.mlw}
+%
+The contract captures exatcly the fact that $x\in \gamma(a) \iff x\in\gamma(a')$. The
+replace function here is a generic array operation I defined in the \minline{ArrayUtils}
+module, and which specifies that the result is the first array where a part of it
+(delimited by the third and fourth arguments) is replaced by the second array.
+%
+It is equipped with the following lemma, which guarantees that
+$\gamma(\minline{replace a a' i }) = (\gamma(a) \cup
+\gamma(a'))\setminus\gamma(a[i,...,j-1])$:
+\inputminted{\whyml}{why3code/replace_lemma.mlw}
+
+To obtain a result of type \minline{bound_interval} from an array, we apply two
+conversion functions:
+\inputminted{\whyml}{why3code/union_union.mlw}
+
+Here is the signature of the two conversion functions, capturing that we preserve the
+same notion of concrezitation to a set throughout the conversions:
+\inputminted{\whyml}{why3code/bound_convs_contracts.mlw}
+
+The implementation and proof of these functions, and the definition of the
+\minline{lax_bound_union} intermediate type is described as the computational part of
+questions 9-10.
+
+\subsection{The general union level}
+
+Again, we implement the union on a version without invariant, with the following
+straightforward implementation that takes the union of each part separately.
+%
+  \begin{algorithmic}
+     \Require { (lo, bu, up), (lo', bu', up') : (option V.t, bound\_union, option V.t) }
+     \Ensure { $\gamma($res\_lo, res\_bu, res\_up$) =\gamma($lo,bu,up
+               $)\cup\gamma($lo',bu',up'$)$ }
+     \State res\_bu $\gets$ union\_union bu bu'
+     \State res\_lo $\gets$ max lo lo'  (w.r.t V.(<) extended with None $<$ Some \_)
+     \State res\_up $\gets$ min lo lo' (w.r.t V.(<) extended with Some \_ $<$ None)
+  \end{algorithmic}
+%
+This is sound and complete because each triple represents a finite union of its three
+components and the union is commutative.
+
+The final contract looks like this:
+\inputminted{\whyml}{why3code/union_contract.mlw}
+It implements the pseudo-code above, then converts the triple into one satisfying the
+type invariants of \minline{u} using the function \minline{fix_untyped} which we
+detail in questions 9-10 and which has the following contract:
+\inputminted{\whyml}{why3code/fix_untyped_contract.mlw}

@@ -438,11 +438,10 @@ module BoundUnion
     done;
     tmp
 
-  let union_union (bu bu' : bound_union) : bound_union
-    ensures { forall x. mem_union x result
-                    <-> mem_union x bu \/ mem_union x bu' }
-  =
-    lax_to_strict (lax_union_union (lax_inj bu) (lax_inj bu'))
+  let gen_union_union (a a' : array bound_interval) : array bound_interval
+    ensures { forall x. gen_mem_union x result
+                    <-> gen_mem_union x a \/ gen_mem_union x a' }
+  = replace a a' (length a) (length a)
 
   let function mk_1_union (i : bound_interval)
     ensures { forall x. mem_union x result <-> mem_r_interval x i }
@@ -455,6 +454,12 @@ module BoundUnion
   let lax_bound_union_to_array (lu: lax_bound_union) : array bound_interval
     ensures { forall x. gen_mem_union x result <-> lax_mem_union x lu }
   = lu.lax_a
+
+  let union_union (bu bu' : bound_union) : bound_union
+    ensures { forall x. mem_union x result
+                    <-> mem_union x bu \/ mem_union x bu' }
+  =
+    lax_to_strict (array_to_lax_bound_union (gen_union_union bu.a bu'.a))
 
   let gen_inter_interval (int : bound_interval) (a : array bound_interval) : array bound_interval
     ensures { forall x. gen_mem_union x result
