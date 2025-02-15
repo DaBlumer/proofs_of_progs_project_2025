@@ -1,10 +1,10 @@
 {
   "fast": 0.2,
   "time": 1,
-  "depth": 4,
+  "depth": 6,
   "packages": [],
   "provers": [ "alt-ergo", "z3", "cvc4", "cvc5" ],
-  "tactics": [ "split_vc" ],
+  "tactics": [ "split_goal_full", "split_all_full",  "inline_goal", "split_vc" ],
   "drivers": [],
   "warnoff": []
 }
