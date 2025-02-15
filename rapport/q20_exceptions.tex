@@ -1,0 +1,9 @@
+\section{Question 20 : bottom}
+
+Since getting the empty set is a behaviour that is expected to happen in runtime,
+type invariants and function contracts forbidding the empty set are not appropriate.
+
+What is appropriate here is then to declare a Bottom exception, and make the
+intersection operator (which is the only one susceptible to get an empty union) raise
+this exception, ensuring in its contract that its result is the empty set if and only
+if the exception is raised.
