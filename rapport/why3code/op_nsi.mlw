@@ -1,0 +1,3 @@
+val op_nsi (op : V.op) (u : u)
+    requires { V.nsi op }
+    ensures { forall x. mem x u -> mem (op.V.ur x) result }

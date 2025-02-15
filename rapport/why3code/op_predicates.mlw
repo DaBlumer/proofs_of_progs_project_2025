@@ -1,0 +1,3 @@
+ predicate si (f : op) = forall r r'. r <. r' -> (f.ur r) <. (f.ur r')
+ predicate sd (f : op) = forall r r'. r <. r' -> (f.ur r) >. (f.ur r')
+ predicate nsi (f : op) = forall r r'. r <=. r' -> (f.ur r) <=. (f.ur r')

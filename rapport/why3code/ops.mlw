@@ -1,0 +1,14 @@
+let cube (u : u) : u
+  ensures { forall x. mem x u <-> mem (x*.x*.x) result } =
+  let op = { V.ur=(fun x -> x*.x*.x); V.uq=(fun q -> V.(q*q*q))} in
+  op_si op u
+let neg (u : u) : u
+  ensures { forall x. mem x u <-> mem (0.0 -. x) result } =
+  let op = { V.ur=(fun x -> 0.0 -. x); V.uq=(fun q -> V.(q-q-q))} in
+  op_sd op u
+let mul_cst (c : V.t) (u : u) : u
+  ensures { forall x. mem x u -> mem (x *. c) result } =
+  let op = { V.ur=( *.) c.V.real; V.uq=V.((*) c) } in
+  if V.(c < c-c) then op_sd op u
+  else if V.(c-c < c) then op_si op u
+  else (* c = 0 *) singleton c

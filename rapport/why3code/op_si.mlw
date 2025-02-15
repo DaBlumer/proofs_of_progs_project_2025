@@ -1,0 +1,8 @@
+let op_si (op : V.op) (u : u)
+  requires { V.si op }
+  ensures { forall x. mem x u <-> mem (op.V.ur x) result }
+=
+  let ud = op_si_up_down op u.unbound_down in
+  let uu = op_si_up_down op u.unbound_up in
+  let b = op_si_union op u.bu in
+  fix_untyped ud uu b

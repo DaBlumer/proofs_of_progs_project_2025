@@ -1,0 +1,7 @@
+function relu (x:real) : real = if x >=. 0.0 then x else 0.0
+let relu (u : u) : u
+  ensures { forall x. mem x u -> mem (relu x) result } =
+  let op = { V.ur=relu;
+             V.uq=(fun q -> V.(if (q-q) <= q then q else (q-q))) }
+  in
+  op_nsi op u
