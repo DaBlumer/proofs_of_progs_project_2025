@@ -1,0 +1,30 @@
+\section{Conclusion}
+
+\subsection{Achievements}
+I have implemented all of the requested functions, and am mostly satisfied with the
+end result, in particular the design choice to have a canonical representative for
+every set, and to separate the work to get such a representation into conversion
+functions, allowing me to have elegant subset and disjoint sound and complete
+implementations.
+
+On the other hand, I am not sure if this advantage in the simplicity of the final
+implementations of the operators is worth all the (not so elegant very long in number
+on lines and time to achieve) proof work that was necessary to prove that my
+representation is really extensional.
+%
+In any case, if the completeness of the subset operator is essential, this way the
+best way I could think of to achieve it with a reasonable specification.
+
+
+\subsection{Experience}
+Despite starting the project only after having understood all the lectures and all
+the exercises, having to implement a relatively consequent specification allowed me
+to get many subtleties of the why3 system (also thanks to concise yet useful
+reference manual for why3); in particular I got a feel of the actual process of
+writing verified code, and how to debug such code with assertions.
+
+I also learned to trust the SMT provers as in most cases they were nice enough to
+find proofs without needing intermediary hints, and in all the cases (except some
+witness is necessary for the proof) where I though they were not getting something
+obvious, I was actually the one to blame for some faulty algorithm or
+specification.
