@@ -1,0 +1,3 @@
+  let inter_bound_bound (b b' : bound_union)
+    ensures { forall x. mem x result <-> mem_union x b /\ mem_union x b' }
+  = { unbound_down=None; bu = inter_union b b'; unbound_up=None }

@@ -24,8 +24,8 @@ module, and which specifies that the result is the first array where a part of i
 (delimited by the third and fourth arguments) is replaced by the second array.
 %
 It is equipped with the following lemma, which guarantees that
-$\gamma(\minline{replace a a' i }) = (\gamma(a) \cup
-\gamma(a'))\setminus\gamma(a[i,...,j-1])$:
+$\gamma($\minline{replace a a' i }$) = (\gamma(a) \cup$
+$\gamma(a'))\setminus\gamma(a[i,...,j-1])$:
 \inputminted{\whyml}{why3code/replace_lemma.mlw}
 
 To obtain a result of type \minline{bound_interval} from an array, we apply two
@@ -44,7 +44,7 @@ questions 9-10.
 
 Again, we implement the union on a version without invariant, with the following
 straightforward implementation that takes the union of each part separately.
-%
+
   \begin{algorithmic}
      \Require { (lo, bu, up), (lo', bu', up') : (option V.t, bound\_union, option V.t) }
      \Ensure { $\gamma($res\_lo, res\_bu, res\_up$) =\gamma($lo,bu,up
@@ -53,13 +53,13 @@ straightforward implementation that takes the union of each part separately.
      \State res\_lo $\gets$ max lo lo'  (w.r.t V.(<) extended with None $<$ Some \_)
      \State res\_up $\gets$ min lo lo' (w.r.t V.(<) extended with Some \_ $<$ None)
   \end{algorithmic}
-%
+
 This is sound and complete because each triple represents a finite union of its three
 components and the union is commutative.
 
 The final contract looks like this:
 \inputminted{\whyml}{why3code/union_contract.mlw}
 It implements the pseudo-code above, then converts the triple into one satisfying the
-type invariants of \minline{u} using the function \minline{fix_untyped} which we
+type invariants of u using the function fix\_untyped which we
 detail in questions 9-10 and which has the following contract:
 \inputminted{\whyml}{why3code/fix_untyped_contract.mlw}

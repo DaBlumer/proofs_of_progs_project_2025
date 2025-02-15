@@ -1,0 +1,11 @@
+\section{Question 6: except}
+
+The \minline{except} function was implemented after the \minline{union} and
+\minline{intersection} functions and is implemented with the formula
+$$ A \setminus \{x\} = A \cap (]-\infty, x[~\cup~]x, \infty[) $$
+
+This gives the following simple implementation:
+\inputminted{\whyml}{why3code/except.mlw}
+
+The contract states exactly that some $x$ is in $\gamma($\minline{except e u}$)$ if
+and only if it is in $\gamma($\minline{u}$)$ but is not equal to $e$.

@@ -1,0 +1,6 @@
+  let except (e : V.t) (u : u) : u
+    ensures { forall x. mem x u /\ x<>e.V.real <-> mem x result }
+  =
+   let everything_after = gt e in
+   let everything_before = lt e in
+   inter u (union everything_after everything_before)

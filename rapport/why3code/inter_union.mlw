@@ -1,0 +1,11 @@
+  let inter_union (bu bu' : bound_union) : bound_union
+    ensures { forall x. mem_union x result <->
+                        mem_union x bu /\ mem_union x bu' }
+  =
+    let ref result = { a = empty () } in
+    for i = 0 to bu'.a.length - 1 do
+      invariant { forall x. mem_union x result <->
+                            mem_union x bu /\ gen_mem_sub_union x bu'.a 0 i }
+      result <- union_union result (inter_interval bu'.a[i] bu)
+    done;
+    result

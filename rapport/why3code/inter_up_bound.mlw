@@ -1,0 +1,12 @@
+  val inter_up_interval (up : option V.t) (int: bound_interval)
+    ensures { forall x. mem x result <-> mem_unbound_up x up /\ mem_r_interval x int }
+  let inter_up_bound (up : option V.t) (b : bound_union)
+    ensures { forall x. mem x result <-> mem_union x b /\ mem_unbound_up x up }
+  =
+    let ref res = empty_u() in
+    for i = 0 to length b.a - 1 do
+      invariant { forall x. mem x res <->
+                  gen_mem_sub_union x b.a 0 i /\ mem_unbound_up x up }
+      res <- union res (inter_up_interval up b.a[i])
+    done;
+    res

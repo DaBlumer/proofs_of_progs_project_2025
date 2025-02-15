@@ -1,0 +1,71 @@
+\section{Question 8: intersection}
+
+I implemented the intersection (on data structures without invariants)
+using the union and the general fact that union and intersection commute, and so the
+intersection of two unions is the union of the 9 intersections of each component of
+the first with each component of the second.
+%
+I will detail the implementation of intersecting the two bound components, and the
+other cases are simpler and implemented in an analogous manner.
+
+\subsection{The \minline{bound_union} layer}
+
+Again, for the intersection of two bound interval unions encoded as arrays of bound
+intervals, I used the following formula based on the commutativity between union
+and intersection:
+%
+$$
+\bigcup_{i=0}^{n-1}{A_i} \cap \bigcup_{j=0}^{m-1}{B_j}
+=
+\bigcup_{i=0}^{n-1}{\left( A_i \cap \bigcup_{j=0}^{m-1}{B_j}\right)}
+$$
+%
+Which gives the implementation: \inputminted{\whyml}{why3code/inter_union.mlw} The
+function \minline{inter_interval} takes a union and an interval and computes their
+intersection, that is it computes $A_i \cap \bigcup_{j=0}{|B|-1}^{B_j}$. This
+guarantees the correctness of the loop invariant which ensures that at each step, the
+result variable is equal to
+%
+$\bigcup_{i'=0}^{i-1}{\left( A_i \cap \bigcup_{j=0}^{m-1}{B_j}\right)$.
+%
+This invariant guarantees exactly the postcondition at loop exit.
+
+The \minline{inter_interval} function is implemented with the following formula in a
+similar war, modulo the conversion to ensure the \minline{bound_union} invariants.
+$$
+\bigcup_{i=0}^{n-1}{\left( A_i \cap \bigcup_{j=0}^{m-1}{B_j}\right)}
+=
+\bigcup_{i=0}^{n-1}{\bigcup_{j=0}^{m-1}{\left(A_i \cap B_j\right)}}
+$$
+
+\subsection{The \minline{u} layer}
+
+First we lift the operation \minline{inter_union} to the type \minline{u}:
+\inputminted{\whyml}{why3code/inter_bound_bound.mlw}
+
+Then, we implement the other kinds of intersections in an analogous way. For example,
+here is (part of) the implementation for intersecting a bound union component with a right
+unbound interval:
+%
+\inputminted{\whyml}{why3code/inter_up_bound.mlw}
+%
+We see that the loop is similar to the one in \minline{inter_union} as each step adds
+(applies the union) the result of the intersection of the unbound interval with the
+next element of the \minline{bound_union}, maintaining the invariant.
+%
+The function computing the union between a bound interval and an unbound one,
+\minline{inter_up_interval}, is implemented in a straightforward way as:
+%
+\begin{align*}
+  [a, b] \cap ]c, \infty] &=
+  \begin{cases}
+    [a, b]  & \text{if } c < a \\
+    ]c, b]  & \text{if } a \le c < b \\
+    \emptyset & \text{otherwise}
+  \end{cases}
+\end{align*}
+
+Finally, the implementation on the union of two \minline{u}s is:
+\inputminted{\whyml}{why3code/inter.mlw}
+
+

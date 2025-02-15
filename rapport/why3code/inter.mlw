@@ -1,0 +1,13 @@
+  let inter (u:u) (v:u) : u
+    ensures { forall x. mem x result <-> mem x u /\ mem x v }
+  =
+    let (+) = union in
+      inter_down_down u.unbound_down v.unbound_down
+     +inter_up_up u.unbound_up v.unbound_up
+     +inter_bound_bound u.bu v.bu
+     +inter_down_up u.unbound_down v.unbound_up
+     +inter_down_up v.unbound_down u.unbound_up
+     +inter_down_bound v.unbound_down u.bu
+     +inter_down_bound u.unbound_down v.bu
+     +inter_up_bound u.unbound_up v.bu
+     +inter_up_bound v.unbound_up u.bu
