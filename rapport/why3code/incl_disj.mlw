@@ -1,0 +1,7 @@
+  let subset (u:u) (v:u) : bool
+    ensures { result <-> forall x. mem x u -> mem x v }
+  = weak_eq (inter u v) u
+
+  let disjoint (u:u) (v:u) : bool
+    ensures { result <-> forall x. not (mem x u /\ mem x v) }
+  = weak_eq (inter u v) (empty_u())

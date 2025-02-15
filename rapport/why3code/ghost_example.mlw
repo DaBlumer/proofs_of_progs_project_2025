@@ -1,0 +1,6 @@
+  let lemma is_unbound_up_prop (u : u) (x : real) : real
+    requires { is_unbound_up u }
+    ensures { result >. x /\ mem result u }
+  =
+    let l = match u.unbound_up with None -> absurd | Some l -> l end in
+    V.(if real l >. x then real l +. 1.0 else x +. 1.0)

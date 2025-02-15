@@ -1,0 +1,83 @@
+\section{Questions 9 to 11: Subset and intersection}
+
+I start in \autoref{q9-11:impl} by showing the actual implementation of the functions
+which is elementary and relies on the fact that $A\cap B=A \iff A \subset B$.
+%
+For this to work we need our representation to be extensional: that is we need for
+each representable set to have only one encoding within our types, and it is exactly
+the motivation behind our type invariants. I discuss the proof of this fact in
+\autoref{q9-11:ext}
+%
+Finally, since the real computation that matters here is the conversion functions
+that compute the equivalent result satisfying the invariants, I discuss these in
+\autoref{q9-11:conv}.
+
+
+\subsection{Implementation and soundness (questions 9 and 10)}\label{q9-11:impl}
+
+First, some computable predicates that say that the data structures are equal pointwise.
+\inputminted{\whyml}{why3code/weak_eq.mlw}
+And the two implementations:
+\inputminted{\whyml}{why3code/incl_disj.mlw}
+
+The soundness is trivial here as were are litteraly requestion for the two sets to be
+represented in the same way.
+
+\subsection{Completeness: proof of the unicity of representation (question
+  11)}\label{q9-11:ext}
+
+To show the completeness of these two functions, I showed the following two lemmas,
+stating that if $\gamma(u)=\gamma(v)$ then $u = v$.
+%
+\inputminted{\whyml}{why3code/extentionality_lemmas.mlw}
+%
+To prove these lemmas, I had to show many auxiliary ones that all essentially provide
+witnesses $x \in u \setminus v$ anytime we have that $u = v$, .
+%
+The whole process quite long and not very elegant, and is approximatively done in 400
+lines. As an example, the following lemma provides an arbitrarily big element of an
+unbound union.
+%
+\inputminted{\whyml}{why3code/ghost_example.mlw}
+
+\subsection{Conversion functions}\label{q9-11:conv}
+We are able to make simple computations without preserving type invariants for the
+union and intersection operations thanks because we separate those operations from
+the burden of keeping the invariants. This is possible because the \minline{mem} we
+dedined does not depend on invariants and remains valid.
+
+\subsubsection{Converting an array to a \minline{bound_union}}
+
+I do this in two steps: first I convert the array to an intermediate type
+\minline{lax_bound_union} which ensures that the intervals are sorted by their lower
+bounds, then I transform this intermediate structure with the following function:
+%
+\inputminted{\whyml}{why3code/lax_to_strict.mlw}
+%
+
+This function operates on an array of intervals sorted by their lower bounds, and at
+each loop step with index $0\lei < |lbu.a|$, it can do two things:
+\begin{itemize}
+  \item if the interval at $a_i$ occures strictly before $a_{i+1}$ (for example
+    $[0,1] << [1.5,2]$), it advances by incrementing $i$, and by preserving the
+    third invariant of the loop and making the variant decrease.
+  \item otherwise, this means the two intervals can be merged (for example we may
+    have $([0,1],]1,2])$ or $([0,2],[1,3])$. In that case we merge the intervals into
+    one that has the same elements, thus preserving the fourth invariant and making
+    the variant decrease as the array size descreases by 1.
+    This is ensured by the contract of the \minline{lax_merge} function.
+\end{itemize}
+Finally, first invariant is true and maintained as $i$ starts by being positive, and
+the second one (where \minline{<==} is the order by lower bound) is true at first
+because of the type invariant of tmp, and is preserved because every change of
+elements preserves the sorting by lower bound. The third and fourth invariants are
+trivially true at start, and the postcondition is equivalent to the fourth invariant
+at loop exit.
+
+
+\subsubsection{Converting a triple in \minline{(option V.t, bound_union, option V.t)}
+  to \minline{u}}
+The process is analogous to that of the preceding conversion, and without going into
+details, here is the contract of the final function:
+%
+\inputminted{\whyml}{why3code/fix_untyped.mlw}

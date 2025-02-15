@@ -12,7 +12,6 @@
     "Intf": {},
     "Skel": {
       "Make.all_u": { "prover": "z3@4.8.12", "time": 0.172 },
-      "Make.aux": { "prover": "alt-ergo@2.6.0", "time": 0.086 },
       "Make.bound_unbound_disj": {
         "prover": "alt-ergo@2.6.0",
         "time": 0.106
@@ -54,6 +53,7 @@
       "Make.disjoint": { "prover": "alt-ergo@2.6.0", "time": 0.211 },
       "Make.empty_u": { "prover": "alt-ergo@2.6.0", "time": 0.065 },
       "Make.eq_ext": { "prover": "alt-ergo@2.6.0", "time": 0.136 },
+      "Make.eq_ext_aux": { "prover": "alt-ergo@2.6.0", "time": 0.081 },
       "Make.eq_ext_aux0": {
         "tactic": "split_goal_full",
         "children": [

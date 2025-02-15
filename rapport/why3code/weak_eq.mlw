@@ -1,0 +1,12 @@
+  let predicate weak_array_eq (a b : array 'a) = any bool
+    ensures {
+      result <->
+          length a = length b
+       /\ forall i. 0<= i < length a -> a[i]=b[i]
+    }
+  let predicate bound_union_weak_eq (bu bu' : bound_union) = any bool
+    ensures { result <-> weak_array_eq bu.a bu'.a }
+  let predicate weak_eq (u v: u) =
+  any bool ensures {  result <->
+     (u.unbound_down = v.unbound_down /\ u.unbound_up = v.unbound_up
+      /\ bound_union_weak_eq u.bu v.bu) }

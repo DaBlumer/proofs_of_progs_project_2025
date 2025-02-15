@@ -1,0 +1,19 @@
+let lax_to_strict (lbu : lax_bound_union) : bound_union
+    ensures { forall x. mem_union x result <-> lax_mem_union x lbu }
+  =
+    let ref i = 0 in
+    let ref tmp = { lax_a = copy lbu.lax_a } in
+    while i < tmp.lax_a.length - 1 do
+      variant { tmp.lax_a.length - i }
+      invariant { 0 <= i }
+      invariant { forall j. 0 <= j < tmp.lax_a.length - 1 ->
+                  tmp.lax_a[j] <== tmp.lax_a[j+1] }
+      invariant { forall j. 0 <= j < i -> tmp.lax_a[j] << tmp.lax_a[j+1] }
+      invariant { forall x. lax_mem_union x lbu <-> lax_mem_union x tmp }
+
+      if tmp.lax_a[i] <.> tmp.lax_a[i+1] then
+        tmp <- lax_merge tmp i;
+      else
+        i <- i + 1
+    done;
+    { a = tmp.lax_a }

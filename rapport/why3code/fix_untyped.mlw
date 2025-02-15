@@ -1,0 +1,3 @@
+val fix_untyped (unbound_down unbound_up : option V.t) (bu : bound_union)
+   ensures { forall x. mem x result <->
+                       untyped_mem x unbound_down unbound_up bu }

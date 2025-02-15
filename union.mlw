@@ -703,15 +703,14 @@ module Skel
      (u.unbound_down = v.unbound_down /\ u.unbound_up = v.unbound_up
       /\ bound_union_weak_eq u.bu v.bu) }
 
-  let lemma aux (u v : u)
+  let lemma eq_ext_aux (u v : u)
     requires { forall x. mem x u <-> mem x v }
     ensures { weak_eq u v }
   = ()
 
-  let lemma eq_ext (u v : u)
-    ensures { forall x. mem x u <-> mem x v }
-    requires { weak_eq u v }
-  = ()
+  lemma eq_ext : forall u v.
+    (forall x. mem x u <-> mem x v ) <->
+    (weak_eq u v)
 
   let subset (u:u) (v:u) : bool
     ensures { result <-> forall x. mem x u -> mem x v }

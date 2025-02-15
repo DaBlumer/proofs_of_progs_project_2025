@@ -1,0 +1,6 @@
+lemma bound_union_ext : forall bu bu'.
+    (incl_union bu bu' /\ incl_union bu' bu) <->
+    bound_union_weak_eq bu bu'
+lemma eq_ext : forall u v.
+    (forall x. mem x u <-> mem x v ) <->
+    (weak_eq u v)
